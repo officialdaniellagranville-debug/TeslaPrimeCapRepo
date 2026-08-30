@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Outlier",
+    "url": "https://outlier.ai",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "$15-50/hr via Payoneer. Weekly payouts.",
+    "last_checked": "2026-08-04T16:59:32.890Z",
+    "last_available": "2026-08-04T16:59:32.890Z",
+    "id": 1,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Mindrift",
+    "url": "https://mindrift.ai",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "$15-100+/hr via Payoneer. Bi-weekly payouts.",
+    "last_checked": "2026-08-04T16:59:34.578Z",
+    "last_available": "2026-08-04T16:59:34.578Z",
+    "id": 2,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Pareto AI",
+    "url": "https://pareto.ai",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "Weekly Payoneer payouts.",
+    "last_checked": "2026-08-04T16:59:35.136Z",
+    "last_available": "2026-08-04T16:59:35.136Z",
+    "id": 3,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Alignerr",
+    "url": "https://alignerr.com",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "$40-120/hr via Deel.",
+    "last_checked": "2026-08-04T16:59:35.704Z",
+    "last_available": "2026-08-04T16:59:35.704Z",
+    "id": 4,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Handshake AI",
+    "url": "https://handshake.ai",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "Pays via Deel. No AI experience required.",
+    "last_checked": "2026-08-04T16:59:36.613Z",
+    "last_available": "2026-08-04T16:59:36.613Z",
+    "id": 5,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Stellar AI",
+    "url": "https://stellar.ai",
+    "status": "offline",
+    "payoneer_email": "",
+    "notes": "$25+/hr. Weekly payouts.",
+    "last_checked": "2026-08-04T16:59:47.114Z",
+    "last_available": "",
+    "id": 6,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "Welocalize",
+    "url": "https://welocalize.com",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "Payoneer + direct bank transfer. $15-22/hr.",
+    "last_checked": "2026-08-04T16:59:48.863Z",
+    "last_available": "2026-08-04T16:59:48.862Z",
+    "id": 7,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "OneForma",
+    "url": "https://oneforma.com",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "Payoneer. $10-20/hr.",
+    "last_checked": "2026-08-04T16:59:51.057Z",
+    "last_available": "2026-08-04T16:59:51.057Z",
+    "id": 8,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "CrowdGen",
+    "url": "https://crowdgen.ai",
+    "status": "offline",
+    "payoneer_email": "",
+    "notes": "Payoneer + AirTM. $8-15/hr.",
+    "last_checked": "2026-08-04T16:59:51.616Z",
+    "last_available": "",
+    "id": 9,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  },
+  {
+    "name": "TELUS Digital",
+    "url": "https://telusinternational.com",
+    "status": "online",
+    "payoneer_email": "",
+    "notes": "Payoneer. $10-18/hr.",
+    "last_checked": "2026-08-04T16:59:52.259Z",
+    "last_available": "2026-08-04T16:59:52.258Z",
+    "id": 10,
+    "created_at": "2026-08-04T03:35:41.496Z"
+  }
+]

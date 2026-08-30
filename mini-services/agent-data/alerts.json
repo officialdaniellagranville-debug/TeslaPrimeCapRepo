@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "type": "earnings",
+    "message": "Good morning. It is past 9 AM WAT and you have not logged any earnings today. Check Outlier and Mindrift for available tasks NOW.",
+    "trigger_time": "2026-08-04T08:14:43.808Z",
+    "is_read": false,
+    "created_at": "2026-08-04T08:14:43.808Z"
+  },
+  {
+    "id": 2,
+    "type": "earnings",
+    "message": "Good morning. It is past 9 AM WAT and you have not logged any earnings today. Check Outlier and Mindrift for available tasks NOW.",
+    "trigger_time": "2026-08-04T08:44:43.836Z",
+    "is_read": false,
+    "created_at": "2026-08-04T08:44:43.836Z"
+  }
+]

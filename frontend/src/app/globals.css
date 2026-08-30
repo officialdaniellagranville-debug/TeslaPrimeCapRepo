@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-tesla-red: #CC0000;
+  --color-tesla-dark: #000000;
+  --color-tesla-gray-900: #171717;
+  --color-tesla-gray-800: #1a1a1a;
+  --color-tesla-gray-700: #262626;
+  --color-tesla-gray-600: #393939;
+  --color-tesla-gray-500: #525252;
+  --color-tesla-gray-400: #737373;
+  --color-tesla-gray-300: #a3a3a3;
+  --color-tesla-gray-200: #d4d4d4;
+  --color-tesla-gray-100: #e5e5e5;
+  --color-tesla-gray-50: #f5f5f5;
+  --color-tesla-white: #ffffff;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #393939;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+/* Tesla-style button hover glow */
+.btn-tesla {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-tesla::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-tesla:hover::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-500 { animation-delay: 0.5s; }
+
+/* Tesla card hover */
+.card-tesla {
+  background: #171717;
+  border: 1px solid #262626;
+  transition: all 0.3s ease;
+}
+
+.card-tesla:hover {
+  border-color: #393939;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(23, 23, 23, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Input styling */
+input, textarea, select {
+  outline: none;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #CC0000 !important;
+  box-shadow: 0 0 0 1px #CC0000;
+}

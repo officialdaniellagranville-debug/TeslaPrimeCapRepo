@@ -1,0 +1,106 @@
+From ef171015a85f20c4b9da479e7649ae3ca3287ee0 Mon Sep 17 00:00:00 2001
+From: Z User <z@container>
+Date: Thu, 23 Jul 2026 08:41:03 +0000
+Subject: [PATCH 4/4] 9ba2f967-bb8a-4af2-b921-544395939a37
+
+---
+ public/manifest.json                  | 0
+ src/app/(auth)/loading.tsx            | 0
+ src/app/(dashboard)/loading.tsx       | 0
+ src/app/(public)/blog/[slug]/page.tsx | 0
+ src/app/(public)/blog/page.tsx        | 0
+ src/app/(public)/blog/sitemap.ts      | 0
+ src/app/(public)/error.tsx            | 0
+ src/app/(public)/loading.tsx          | 0
+ src/app/api/cron/payouts/route.ts     | 0
+ src/app/api/ws/route.ts               | 0
+ src/app/error.tsx                     | 0
+ src/app/loading.tsx                   | 0
+ src/app/not-found.tsx                 | 0
+ src/components/GoogleAnalytics.tsx    | 0
+ src/lib/blog-data.ts                  | 0
+ src/lib/logger.ts                     | 0
+ src/lib/middleware.ts                 | 0
+ src/lib/rate-limit.ts                 | 0
+ src/lib/validation.ts                 | 0
+ 19 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 public/manifest.json
+ mode change 100644 => 100755 src/app/(auth)/loading.tsx
+ mode change 100644 => 100755 src/app/(dashboard)/loading.tsx
+ mode change 100644 => 100755 src/app/(public)/blog/[slug]/page.tsx
+ mode change 100644 => 100755 src/app/(public)/blog/page.tsx
+ mode change 100644 => 100755 src/app/(public)/blog/sitemap.ts
+ mode change 100644 => 100755 src/app/(public)/error.tsx
+ mode change 100644 => 100755 src/app/(public)/loading.tsx
+ mode change 100644 => 100755 src/app/api/cron/payouts/route.ts
+ mode change 100644 => 100755 src/app/api/ws/route.ts
+ mode change 100644 => 100755 src/app/error.tsx
+ mode change 100644 => 100755 src/app/loading.tsx
+ mode change 100644 => 100755 src/app/not-found.tsx
+ mode change 100644 => 100755 src/components/GoogleAnalytics.tsx
+ mode change 100644 => 100755 src/lib/blog-data.ts
+ mode change 100644 => 100755 src/lib/logger.ts
+ mode change 100644 => 100755 src/lib/middleware.ts
+ mode change 100644 => 100755 src/lib/rate-limit.ts
+ mode change 100644 => 100755 src/lib/validation.ts
+
+diff --git a/public/manifest.json b/public/manifest.json
+old mode 100644
+new mode 100755
+diff --git a/src/app/(auth)/loading.tsx b/src/app/(auth)/loading.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/(dashboard)/loading.tsx b/src/app/(dashboard)/loading.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/(public)/blog/[slug]/page.tsx b/src/app/(public)/blog/[slug]/page.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/(public)/blog/page.tsx b/src/app/(public)/blog/page.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/(public)/blog/sitemap.ts b/src/app/(public)/blog/sitemap.ts
+old mode 100644
+new mode 100755
+diff --git a/src/app/(public)/error.tsx b/src/app/(public)/error.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/(public)/loading.tsx b/src/app/(public)/loading.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/api/cron/payouts/route.ts b/src/app/api/cron/payouts/route.ts
+old mode 100644
+new mode 100755
+diff --git a/src/app/api/ws/route.ts b/src/app/api/ws/route.ts
+old mode 100644
+new mode 100755
+diff --git a/src/app/error.tsx b/src/app/error.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/loading.tsx b/src/app/loading.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/app/not-found.tsx b/src/app/not-found.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/components/GoogleAnalytics.tsx b/src/components/GoogleAnalytics.tsx
+old mode 100644
+new mode 100755
+diff --git a/src/lib/blog-data.ts b/src/lib/blog-data.ts
+old mode 100644
+new mode 100755
+diff --git a/src/lib/logger.ts b/src/lib/logger.ts
+old mode 100644
+new mode 100755
+diff --git a/src/lib/middleware.ts b/src/lib/middleware.ts
+old mode 100644
+new mode 100755
+diff --git a/src/lib/rate-limit.ts b/src/lib/rate-limit.ts
+old mode 100644
+new mode 100755
+diff --git a/src/lib/validation.ts b/src/lib/validation.ts
+old mode 100644
+new mode 100755
+-- 
+2.47.3
+

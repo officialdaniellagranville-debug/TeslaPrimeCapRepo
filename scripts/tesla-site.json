@@ -1,0 +1,23 @@
+{
+  "code": 200,
+  "data": {
+    "description": "",
+    "external": {},
+    "html": "<html><head>\n<title>Access Denied</title>\n</head><body>\n<h1>Access Denied</h1>\n \nYou don't have permission to access \"http://www.tesla.com/\" on this server.<p>\nReference #18.157b3517.1784592455.339c7081\n</p><p>https://errors.edgesuite.net/18.157b3517.1784592455.339c7081</p>\n<script type=\"text/javascript\" src=\"/feqxUKDq9nCei0_g_vSL/wNiDVXuazEJ9/dhkCag1H/aiQlA2/Mibg0C?v=e422df5a-7f7b-fa2e-fec8-44b35f551735\" defer=\"\"></script>\n\n</body></html>",
+    "httpStatus": 403,
+    "httpStatusText": "",
+    "metadata": {},
+    "title": "Access Denied",
+    "url": "https://www.tesla.com/",
+    "usage": {
+      "tokens": 180
+    },
+    "warning": "Target URL returned error 403: Forbidden"
+  },
+  "meta": {
+    "usage": {
+      "tokens": 180
+    }
+  },
+  "status": 20000
+}
