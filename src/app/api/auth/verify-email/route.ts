@@ -45,19 +45,22 @@ export async function POST(request: NextRequest) {
       });
 
       // Send email — await and surface errors to user
+      let emailSent = false;
       try {
         const result = await sendVerificationEmail(normalizedEmail, otp, name || user.profile?.firstName);
+        emailSent = true;
         console.log(`[VERIFY-EMAIL] OTP sent to ${normalizedEmail} via ${result.provider}`);
       } catch (emailErr: any) {
         console.error('[VERIFY-EMAIL] Failed to send verification email:', emailErr?.message);
-        return apiError(
-          `Failed to send verification email: ${emailErr?.message || 'email not configured'}. Please contact support.`,
-          'EMAIL_SEND_FAILED',
-          503
-        );
+        // Bootstrap mode: return OTP when email fails so frontend can display it
+        return apiResponse({
+          message: `Verification code generated but email delivery failed: ${emailErr?.message || 'email not configured'}`,
+          emailSent: false,
+          verificationCode: otp,
+        });
       }
 
-      return apiResponse({ message: 'Verification code sent to your email' });
+      return apiResponse({ message: 'Verification code sent to your email', emailSent: true });
     }
 
     if (action === 'verify') {
