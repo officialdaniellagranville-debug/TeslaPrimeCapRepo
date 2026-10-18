@@ -13,9 +13,12 @@ import * as crypto from 'crypto';
 // If you see "no email provider", set GMAIL_CLIENT_ID + GMAIL_CLIENT_SECRET +
 // GMAIL_REFRESH_TOKEN in your Railway environment variables.
 const SMTP_EMAIL = process.env.SMTP_EMAIL || 'teslaprimesupportt@gmail.com';
-const FROM_NAME = process.env.EMAIL_FROM_NAME || 'TeslaPrime';
-const FROM_EMAIL = process.env.EMAIL_FROM || SMTP_EMAIL;
+const FROM_NAME = process.env.EMAIL_FROM_NAME || 'TeslaPrime Support';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+// When using Resend without a custom verified domain, fall back to Resend's default sender.
+// To use your own domain, verify it at resend.com/domains and set EMAIL_FROM=you@yourdomain.com
+const RESEND_DEFAULT_FROM = 'TeslaPrime Support <onboarding@resend.dev>';
+const FROM_EMAIL = process.env.EMAIL_FROM || (RESEND_API_KEY ? 'onboarding@resend.dev' : SMTP_EMAIL);
 
 // ─── Gmail API Method A: Service Account (JWT) ───
 // Uses a Google Cloud service account to obtain access tokens via JWT assertion.
