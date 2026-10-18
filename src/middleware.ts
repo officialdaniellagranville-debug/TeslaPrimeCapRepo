@@ -31,7 +31,7 @@ export function middleware(request: NextRequest) {
   const protectedPaths = [
     '/dashboard', '/deposit', '/withdraw', '/investments',
     '/transactions', '/profile', '/security', '/kyc',
-    '/notifications', '/referral', '/plans', '/market', '/support',
+    '/notifications', '/referral', '/market', '/support',
     '/vehicles', '/tracking', '/cards', '/beneficiaries',
     '/pay-bills', '/wire-transfer', '/internal-transfer',
     '/receive-funds', '/link-bank', '/buy-crypto',
@@ -61,7 +61,7 @@ export const config = {
     '/dashboard/:path*', '/deposit/:path*', '/withdraw/:path*',
     '/investments/:path*', '/transactions/:path*', '/profile/:path*',
     '/security/:path*', '/kyc/:path*', '/notifications/:path*',
-    '/referral/:path*', '/plans/:path*', '/market/:path*',
+    '/referral/:path*', '/market/:path*',
     '/support/:path*', '/vehicles/:path*', '/tracking/:path*',
     '/cards/:path*', '/beneficiaries/:path*', '/pay-bills/:path*',
     '/wire-transfer/:path*', '/internal-transfer/:path*',
