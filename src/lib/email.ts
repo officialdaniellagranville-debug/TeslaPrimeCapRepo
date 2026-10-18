@@ -425,35 +425,22 @@ function getLogoUrl(): string {
 // ============================================================
 
 function logoHtml(): string {
-  // PURE HTML/CSS LOGO MARK — no external image dependency.
-  //
-  // Gmail's image proxy is unreliable for new domains (caches failed fetches,
-  // may block fresh domains, etc.). Instead of fighting it, we render a
-  // premium logo mark using pure HTML + CSS that ALWAYS renders, regardless
-  // of email client image loading settings, proxy behavior, or network issues.
-  //
-  // Design: Tesla-style "T" mark
-  //   - Black background with deep crimson border
-  //   - Stylized "T" rendered using a horizontal bar + vertical stem
-  //   - Premium rounded corners, sophisticated spacing
-  //
-  // This is the same approach major brands (Apple, Stripe, Linear) use in
-  // transactional emails — pure HTML/CSS logo marks are 100% reliable.
-  return `<table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 20px"><tr><td style="width:72px;height:72px;background-color:#000000;border:1.5px solid #B91C1C;border-radius:16px;position:relative;overflow:hidden;text-align:center;vertical-align:middle;line-height:72px;font-size:42px;font-weight:900;color:#CC0000;font-family:'Helvetica Neue',Arial,sans-serif;letter-spacing:-2px">T</td></tr></table>`;
+  // PURE HTML/CSS LOGO MARK
+  // Premium Tesla T shield with subtle inner glow effect
+  return `<table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto 20px"><tr><td style="width:72px;height:72px;background:linear-gradient(135deg,#0a0a0a 0%,#111111 100%);border:2px solid #B91C1C;border-radius:18px;text-align:center;vertical-align:middle;line-height:72px;font-size:40px;font-weight:900;color:#CC0000;font-family:'Helvetica Neue',Arial,sans-serif;letter-spacing:-2px;box-shadow:0 0 20px rgba(185,28,28,0.15),inset 0 0 12px rgba(0,0,0,0.3)">T</td></tr></table>`;
 }
 
 function headerBlock(): string {
-  // Premium header design:
-  //   1. Pure CSS logo mark (Tesla-style T) — always renders, no image dependency
-  //   2. Brand wordmark "TESLA PRIME" — styled text
-  //   3. Tagline + accent divider
-  // No external image = nothing to fail loading. Gmail can never break this.
+  // Premium header with:
+  //   1. CSS logo mark (Tesla T shield)
+  //   2. Brand wordmark "TESLA PRIME"
+  //   3. Subtle accent line
   return `
-    <div style="background-color:#000000;padding:48px 32px 36px;text-align:center;border-bottom:1px solid #B91C1C">
+    <div style="background-color:#000000;padding:48px 32px 36px;text-align:center;border-bottom:2px solid #B91C1C">
       ${logoHtml()}
       <h1 style="color:#ffffff;margin:0;font-size:18px;font-weight:700;letter-spacing:5px;font-family:'Helvetica Neue',Arial,sans-serif">TESLA PRIME</h1>
-      <p style="color:#B91C1C;margin:12px 0 0;font-size:9px;letter-spacing:5px;text-transform:uppercase;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif">Premium Investment Platform</p>
-      <div style="width:32px;height:1px;background-color:#B91C1C;margin:16px auto 0"></div>
+      <p style="color:#B91C1C;margin:10px 0 0;font-size:9px;letter-spacing:5px;text-transform:uppercase;font-weight:600;font-family:'Helvetica Neue',Arial,sans-serif">Support</p>
+      <div style="width:40px;height:2px;background-color:#B91C1C;margin:16px auto 0;border-radius:1px"></div>
     </div>`;
 }
 
@@ -485,15 +472,15 @@ function footerBlock(): string {
   const year = new Date().getFullYear();
   return `
     <div style="background-color:#000000;padding:32px 32px 28px;text-align:center;border-top:1px solid #1a1a1a">
-      <p style="color:#666666;font-size:11px;margin:0 0 12px;font-weight:700;letter-spacing:3px;font-family:'Helvetica Neue',Arial,sans-serif">TESLA PRIME</p>
-      <div style="width:24px;height:1px;background-color:#B91C1C;margin:0 auto 16px"></div>
-      <p style="color:#444444;font-size:10px;margin:0 0 16px;line-height:1.7;letter-spacing:0.5px">
-        Professionally managed investment platform<br>
-        Daily returns up to 1.8% across diversified strategies
+      <p style="color:#666666;font-size:11px;margin:0 0 10px;font-weight:700;letter-spacing:3px;font-family:'Helvetica Neue',Arial,sans-serif">TESLA PRIME</p>
+      <div style="width:24px;height:2px;background-color:#B91C1C;margin:0 auto 14px;border-radius:1px"></div>
+      <p style="color:#555555;font-size:10px;margin:0 0 16px;line-height:1.7;letter-spacing:0.5px">
+        Premium investment platform<br>
+        Daily returns up to 1.8%
       </p>
       <p style="color:#333333;font-size:9px;margin:0;line-height:1.6;letter-spacing:0.5px">
-        &copy; ${year} TeslaPrime. All rights reserved.<br>
-        This is an automated message — please do not reply to this email.
+        &copy; ${year} TeslaPrime Support. All rights reserved.<br>
+        This is an automated message. Please do not reply.
       </p>
     </div>`;
 }
@@ -509,7 +496,7 @@ function emailWrapper(innerHtml: string): string {
           <table role="presentation" width="540" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;border-radius:8px;overflow:hidden;border:1px solid #1a1a1a;box-shadow:0 4px 32px rgba(0,0,0,0.5)">
             ${innerHtml}
           </table>
-          <p style="color:#1a1a1a;font-size:9px;margin:20px 0 0;text-align:center;letter-spacing:2px;text-transform:uppercase">TeslaPrime &mdash; Invest with Confidence</p>
+          <p style="color:#1a1a1a;font-size:9px;margin:20px 0 0;text-align:center;letter-spacing:2px;text-transform:uppercase">TeslaPrime // Invest with Confidence</p>
         </td></tr>
       </table>
     </body>
@@ -546,11 +533,11 @@ export async function sendVerificationEmail(to: string, otp: string, name?: stri
     <p style="color:#ffffff;font-size:14px;margin:0 0 16px;font-weight:500;letter-spacing:0.5px">${greeting},</p>
     <p style="color:#888888;font-size:13px;margin:0 0 4px;line-height:1.8;letter-spacing:0.3px">Thank you for opening an account with TeslaPrime. To complete your registration and activate your investment portfolio, please enter the verification code below:</p>
     ${otpBlock(otp, '10 minutes')}
-    <p style="color:#555555;font-size:11px;margin:0;line-height:1.8;letter-spacing:0.3px">Enter this code on the verification page to activate your account. If you did not request this account, you can safely ignore this email — no action is required.</p>
+    <p style="color:#555555;font-size:11px;margin:0;line-height:1.8;letter-spacing:0.3px">Enter this code on the verification page to activate your account. If you did not request this account, you can safely ignore this email. No action is required.</p>
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmailOrThrow(to, 'Your Verification Code — TeslaPrime', html);
+  return sendEmailOrThrow(to, 'Your Verification Code | TeslaPrime Support', html);
 }
 
 export async function sendPasswordResetEmail(to: string, otp: string, name?: string) {
@@ -561,11 +548,11 @@ export async function sendPasswordResetEmail(to: string, otp: string, name?: str
     <p style="color:#ffffff;font-size:14px;margin:0 0 16px;font-weight:500;letter-spacing:0.5px">${greeting},</p>
     <p style="color:#888888;font-size:13px;margin:0 0 4px;line-height:1.8;letter-spacing:0.3px">We received a request to reset the password on your TeslaPrime account. Use the verification code below to set a new password:</p>
     ${otpBlock(otp, '15 minutes')}
-    <p style="color:#555555;font-size:11px;margin:0;line-height:1.8;letter-spacing:0.3px">If you did not request a password reset, please ignore this email — your password will remain unchanged and your account is secure.</p>
+    <p style="color:#555555;font-size:11px;margin:0;line-height:1.8;letter-spacing:0.3px">If you did not request a password reset, please ignore this email. Your password will remain unchanged and your account is secure.</p>
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmailOrThrow(to, 'Password Reset Code — TeslaPrime', html);
+  return sendEmailOrThrow(to, 'Password Reset Code | TeslaPrime Support', html);
 }
 
 export async function sendWelcomeEmail(to: string, name?: string) {
@@ -603,7 +590,7 @@ export async function sendWelcomeEmail(to: string, name?: string) {
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmail(to, 'Welcome to TeslaPrime — Account Activated', html);
+  return sendEmail(to, 'Welcome to TeslaPrime | Account Activated', html);
 }
 
 export async function sendAdminNotificationEmail(to: string, name: string, options: {
@@ -650,7 +637,7 @@ export async function sendAdminNotificationEmail(to: string, name: string, optio
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmail(to, `${title} — TeslaPrime`, html);
+  return sendEmail(to, `${title} | TeslaPrime Support`, html);
 }
 
 // ── KYC Verification Code Required Email ──
@@ -696,7 +683,7 @@ export async function sendKycCodeRequiredEmail(to: string, name: string, options
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmailOrThrow(to, 'KYC Verification Code Required — TeslaPrime', html);
+  return sendEmailOrThrow(to, 'KYC Verification Code Required | TeslaPrime Support', html);
 }
 
 // ── KYC Verification Code Delivered Email ──
@@ -746,7 +733,7 @@ export async function sendKycCodeDeliveredEmail(to: string, name: string, option
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmailOrThrow(to, 'Your KYC Verification Code — TeslaPrime', html);
+  return sendEmailOrThrow(to, 'Your KYC Verification Code | TeslaPrime Support', html);
 }
 
 // ── Vehicle Order Receipt / Invoice Email ──
@@ -869,5 +856,5 @@ export async function sendVehicleOrderReceipt(to: string, options: {
   `);
 
   const html = emailWrapper(headerBlock() + body + footerBlock());
-  return sendEmail(to, `Order Receipt — ${vehicleName} (#${orderNumber})`, html);
+  return sendEmail(to, `Order Receipt | ${vehicleName} (#${orderNumber})`, html);
 }

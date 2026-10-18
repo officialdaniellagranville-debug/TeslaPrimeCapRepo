@@ -1,7 +1,7 @@
 /**
  * Branded HTML Email Template Helper
- * Tesla Prime Capital — Tesla red (#CC0000) / dark (#0a0a0f) theme
- * Inline CSS only — email clients don't support external stylesheets
+ * Tesla Prime Capital // Tesla red (#CC0000) / dark (#0a0a0f) theme
+ * Inline CSS only // email clients don't support external stylesheets
  * Responsive with max-width: 600px
  */
 
@@ -59,7 +59,7 @@ export function renderBrandedEmail(
               <p style="color:#666;font-size:10px;margin:0 0 8px;font-weight:700;letter-spacing:3px;font-family:'Helvetica Neue',Arial,sans-serif">TESLA PRIME CAPITAL</p>
               <div style="width:24px;height:1px;background-color:#CC0000;margin:0 auto 12px"></div>
               <p style="color:#444;font-size:10px;margin:0 0 12px;line-height:1.7;letter-spacing:0.5px">Professionally managed investment platform. Daily returns up to 1.8%.</p>
-              <p style="color:#333;font-size:9px;margin:0;line-height:1.6;letter-spacing:0.5px">&copy; ${year} Tesla Prime Capital. All rights reserved.<br>This is an automated message — please do not reply to this email.</p>
+              <p style="color:#333;font-size:9px;margin:0;line-height:1.6;letter-spacing:0.5px">&copy; ${year} TeslaPrime Support. All rights reserved.<br>This is an automated message. Please do not reply.</p>
             </td>
           </tr>
         </table>
