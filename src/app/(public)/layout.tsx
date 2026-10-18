@@ -17,7 +17,6 @@ const navLinks = [
   { label: 'About', href: '/about' },
   { label: 'FAQ', href: '/faq' },
   { label: 'Contact', href: '/contact' },
-  { label: 'NEXUS AI', href: '/nexus' },
 ];
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
