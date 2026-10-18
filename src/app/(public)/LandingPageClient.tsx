@@ -58,7 +58,7 @@ function AnimatedCounter({ value, suffix = '' }: { value: string; suffix?: strin
     }, 16);
     return () => clearInterval(interval);
   }, [hasAnimated, numericPart, prefix, suffix, decimalPlaces]);
-  return <span ref={ref} className="count-up">{prefix}0{suffix}</span>;
+  return <span ref={ref} className="count-up" suppressHydrationWarning>{prefix}0{suffix}</span>;
 }
 
 function ScrollProgress() {
@@ -136,17 +136,17 @@ function LiveUserCounter() {
         <div className="flex items-center gap-2.5 bg-black/30 border border-white/5 rounded-full px-5 py-2.5">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
           <span className="text-gray-400 text-xs sm:text-sm">Users Online:</span>
-          <span className="text-white font-bold text-sm sm:text-base tabular-nums">{onlineCount.toLocaleString()}</span>
+          <span className="text-white font-bold text-sm sm:text-base tabular-nums" suppressHydrationWarning>{onlineCount.toLocaleString()}</span>
         </div>
         <div className="flex items-center gap-2.5 bg-black/30 border border-white/5 rounded-full px-5 py-2.5">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           <span className="text-gray-400 text-xs sm:text-sm">Deposits Today:</span>
-          <span className="text-white font-bold text-sm sm:text-base tabular-nums">${todayDeposits.toLocaleString()}K</span>
+          <span className="text-white font-bold text-sm sm:text-base tabular-nums" suppressHydrationWarning>${todayDeposits.toLocaleString()}K</span>
         </div>
         <div className="flex items-center gap-2.5 bg-black/30 border border-white/5 rounded-full px-5 py-2.5">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CC0000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
           <span className="text-gray-400 text-xs sm:text-sm">Trades Today:</span>
-          <span className="text-white font-bold text-sm sm:text-base tabular-nums">{todayTrades.toLocaleString()}</span>
+          <span className="text-white font-bold text-sm sm:text-base tabular-nums" suppressHydrationWarning>{todayTrades.toLocaleString()}</span>
         </div>
       </div>
     </FadeIn>

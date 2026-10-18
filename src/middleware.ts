@@ -32,6 +32,11 @@ export function middleware(request: NextRequest) {
     '/dashboard', '/deposit', '/withdraw', '/investments',
     '/transactions', '/profile', '/security', '/kyc',
     '/notifications', '/referral', '/plans', '/market', '/support',
+    '/vehicles', '/tracking', '/cards', '/beneficiaries',
+    '/pay-bills', '/wire-transfer', '/internal-transfer',
+    '/receive-funds', '/link-bank', '/buy-crypto',
+    '/savings-statement', '/checking-statement', '/crypto-statement',
+    '/tax-refund',
   ];
 
   const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
@@ -51,5 +56,17 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/dashboard/:path*', '/deposit/:path*', '/withdraw/:path*', '/investments/:path*', '/transactions/:path*', '/profile/:path*', '/security/:path*', '/kyc/:path*', '/notifications/:path*', '/referral/:path*', '/plans/:path*', '/market/:path*', '/support/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/dashboard/:path*', '/deposit/:path*', '/withdraw/:path*',
+    '/investments/:path*', '/transactions/:path*', '/profile/:path*',
+    '/security/:path*', '/kyc/:path*', '/notifications/:path*',
+    '/referral/:path*', '/plans/:path*', '/market/:path*',
+    '/support/:path*', '/vehicles/:path*', '/tracking/:path*',
+    '/cards/:path*', '/beneficiaries/:path*', '/pay-bills/:path*',
+    '/wire-transfer/:path*', '/internal-transfer/:path*',
+    '/receive-funds/:path*', '/link-bank/:path*', '/buy-crypto/:path*',
+    '/savings-statement/:path*', '/checking-statement/:path*',
+    '/crypto-statement/:path*', '/tax-refund/:path*',
+  ],
 };
