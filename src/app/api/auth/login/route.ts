@@ -184,6 +184,6 @@ export async function POST(request: NextRequest) {
     if (error?.message?.includes('ECONNREFUSED') || error?.message?.includes('connect') || error?.message?.includes('timeout') || error?.message?.includes('ETIMEDOUT')) {
       return apiError('Service temporarily unavailable. Please try again.', 'DB_UNREACHABLE', 503);
     }
-    return apiError('Internal server error', 'INTERNAL_ERROR', 500);
+    return apiError(`Internal server error: ${error?.code || ''} ${error?.message?.substring(0, 100) || ''}`, 'INTERNAL_ERROR', 500);
   }
 }

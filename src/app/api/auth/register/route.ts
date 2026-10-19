@@ -148,7 +148,6 @@ export async function POST(request: NextRequest) {
     if (error.code === 'P2002') {
       return apiError('Email already registered. Please sign in instead.', 'EMAIL_EXISTS', 409);
     }
-    return apiError('Internal server error', 'INTERNAL_ERROR', 500);
+    return apiError(`Internal server error: ${error?.code || ''} ${error?.message?.substring(0, 100) || ''}`, 'INTERNAL_ERROR', 500);
   }
 }
-// Build: 1792335166
