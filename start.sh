@@ -45,13 +45,27 @@ fi
 # entirely when PgBouncer is detected (pgbouncer in URL or RAILWAY_ENVIRONMENT set).
 # For non-PgBouncer setups, we still run it with a 30s timeout to prevent hangs.
 if [ -n "$DATABASE_URL" ]; then
+  # Use DIRECT_URL for DDL if available (bypasses PgBouncer which blocks DDL)
+  SCHEMA_URL="${DIRECT_URL:-$DATABASE_URL}"
   case "$DATABASE_URL" in
     *pgbouncer*|*pooler.supabase.com*)
-      echo "[startup] Connection pooler detected (PgBouncer/Supabase) — skipping prisma db push (DDL blocked by pooler)."
+      if [ -n "$DIRECT_URL" ]; then
+        echo "[startup] PgBouncer detected — using DIRECT_URL for prisma db push (DDL)..."
+        timeout 30 env DATABASE_URL="$SCHEMA_URL" ./node_modules/.bin/prisma db push --accept-data-loss --skip-generate 2>&1 || {
+          echo "[startup] WARNING: prisma db push via DIRECT_URL failed. Trying safety-net fallback."
+        }
+      else
+        echo "[startup] PgBouncer detected, no DIRECT_URL set — skipping prisma db push (DDL blocked)."
+      fi
       ;;
     *)
-      if [ -n "$RAILWAY_ENVIRONMENT" ]; then
-        echo "[startup] Railway environment detected — skipping prisma db push (PgBouncer likely in use)."
+      if [ -n "$RAILWAY_ENVIRONMENT" ] && [ -n "$DIRECT_URL" ]; then
+        echo "[startup] Railway + DIRECT_URL — using DIRECT_URL for prisma db push..."
+        timeout 30 env DATABASE_URL="$SCHEMA_URL" ./node_modules/.bin/prisma db push --accept-data-loss --skip-generate 2>&1 || {
+          echo "[startup] WARNING: prisma db push via DIRECT_URL failed. Trying safety-net fallback."
+        }
+      elif [ -n "$RAILWAY_ENVIRONMENT" ]; then
+        echo "[startup] Railway environment, no DIRECT_URL — skipping prisma db push."
       else
         echo "[startup] Running prisma db push (runtime schema sync, 30s timeout)..."
         timeout 30 ./node_modules/.bin/prisma db push --accept-data-loss --skip-generate 2>&1 || {
