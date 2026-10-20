@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import * as crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import { RESEND_KEY } from './resend-key';
 
 // ─── CONFIGURATION ───
 // Provider priority (highest first):
@@ -14,7 +15,7 @@ import nodemailer from 'nodemailer';
 const SMTP_EMAIL = process.env.SMTP_EMAIL || 'teslaprimesupportt@gmail.com';
 const SMTP_PASSWORD = process.env.SMTP_PASSWORD || '';
 const FROM_NAME = process.env.EMAIL_FROM_NAME || 'TeslaPrime Support';
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const RESEND_API_KEY = process.env.RESEND_API_KEY || RESEND_KEY;
 // When using Resend without a custom verified domain, fall back to Resend's default sender.
 // To use your own domain, verify it at resend.com/domains and set EMAIL_FROM=you@yourdomain.com
 const RESEND_DEFAULT_FROM = 'TeslaPrime Support <onboarding@resend.dev>';

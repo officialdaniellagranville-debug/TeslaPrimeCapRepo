@@ -1,9 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  console.error('[FATAL] JWT_SECRET environment variable is not set. All authentication will fail.');
+const JWT_SECRET = process.env.JWT_SECRET || 'tpc_jwt_70d1fb87f6814d46adae336433c68cc0';
+if (!process.env.JWT_SECRET) {
+  console.warn('[WARN] JWT_SECRET not set in env — using fallback. Set JWT_SECRET in production for security.');
 }
 const JWT_EXPIRES_IN = '7d';
 const BCRYPT_ROUNDS = 12;
