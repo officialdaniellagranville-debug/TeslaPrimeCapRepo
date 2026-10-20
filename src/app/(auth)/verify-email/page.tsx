@@ -58,6 +58,13 @@ export default function VerifyEmailPage() {
       const data = await res.json();
       if (res.ok) {
         startResendTimer();
+        // Bootstrap: auto-fill OTP when email fails (returned in response)
+        if (data.data?.otp) {
+          const otp = String(data.data.otp);
+          const newCode = [...otpCode];
+          otp.split('').forEach((char: string, i: number) => { if (i < 6) newCode[i] = char; });
+          setOtpCode(newCode);
+        }
       } else {
         setError(data.error?.message || 'Failed to send verification code');
       }
@@ -134,6 +141,13 @@ export default function VerifyEmailPage() {
         setOtpCode(['', '', '', '', '', '']);
         setError('');
         startResendTimer();
+        // Bootstrap: auto-fill OTP when email fails (returned in response)
+        if (data.data?.otp) {
+          const otp = String(data.data.otp);
+          const newCode = ['','','','','',''];
+          otp.split('').forEach((char: string, i: number) => { if (i < 6) newCode[i] = char; });
+          setOtpCode(newCode);
+        }
       } else {
         setError(data.error?.message || 'Failed to resend code');
       }

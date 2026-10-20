@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { useAuthStore } from '@/store/useAuthStore';
+import { useState, useEffect, useRef, useCallback, Component, type ReactNode, type ErrorInfo } from 'react';
 
 interface ChatMessage {
   id: string;
@@ -11,13 +10,31 @@ interface ChatMessage {
   isRead: boolean;
 }
 
+// ── Inline Error Boundary ──
+interface EBProps { children: ReactNode; }
+interface EBState { hasError: boolean; }
+class ChatErrorBoundary extends Component<EBProps, EBState> {
+  constructor(props: EBProps) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err: Error, info: ErrorInfo) {
+    console.error('[ChatWidget] Render error:', err?.message, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) return null; // Silent fail — don't break the page
+    return this.props.children;
+  }
+}
+
 /**
  * Built-in Tesla Support Chat Widget
  * Shows Tesla logo + "Tesla Support" branding
- * Real-time polling with the backend ChatMessage model
+ * Works for ALL users (logged in or not)
+ * Logged-out users see "Sign in to chat" prompt
+ * Logged-in users can send/receive messages
  */
-export default function ChatWidget() {
-  const { token } = useAuthStore();
+function ChatWidgetInner() {
+  // Safely read token from localStorage (no zustand dependency for button render)
+  const [token, setToken] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -27,6 +44,26 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Read token from localStorage on mount (client-only)
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem('token');
+      setToken(t);
+    } catch {}
+  }, []);
+
+  // Listen for storage changes (login/logout in other tabs)
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const t = localStorage.getItem('token');
+        setToken(t);
+      } catch {}
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
@@ -45,7 +82,6 @@ export default function ChatWidget() {
       const data = await res.json();
       if (data.success && data.data?.messages) {
         setMessages(data.data.messages);
-        // Count unread admin messages
         const unread = data.data.messages.filter(
           (m: ChatMessage) => m.senderType === 'admin' && !m.isRead
         ).length;
@@ -62,7 +98,6 @@ export default function ChatWidget() {
     if (!token) return;
     fetchMessages();
 
-    // Poll every 5 seconds when open, every 15 seconds when closed
     const startPolling = () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
       const interval = open ? 5000 : 15000;
@@ -93,7 +128,6 @@ export default function ChatWidget() {
     setInput('');
     setSending(true);
 
-    // Optimistic update
     const tempId = `temp-${Date.now()}`;
     setMessages(prev => [...prev, {
       id: tempId,
@@ -115,12 +149,10 @@ export default function ChatWidget() {
       });
       const data = await res.json();
       if (data.success) {
-        // Replace temp message with real one
         setMessages(prev => prev.map(m => m.id === tempId ? data.data : m));
       } else {
-        // Remove optimistic message on failure
         setMessages(prev => prev.filter(m => m.id !== tempId));
-        setInput(msg); // restore input
+        setInput(msg);
       }
     } catch {
       setMessages(prev => prev.filter(m => m.id !== tempId));
@@ -147,11 +179,12 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Chat FAB Button */}
+      {/* Chat FAB Button — ALWAYS visible */}
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-20 right-4 z-50 w-14 h-14 rounded-full bg-[#CC0000] hover:bg-[#ff1a1a] text-white shadow-lg shadow-[#CC0000]/30 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+        className="fixed bottom-20 right-4 z-[9999] w-14 h-14 rounded-full bg-[#CC0000] hover:bg-[#ff1a1a] text-white shadow-lg shadow-[#CC0000]/30 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
         aria-label="Chat with Tesla Support"
+        style={{ position: 'fixed', bottom: '80px', right: '16px', zIndex: 9999 }}
       >
         {open ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -173,10 +206,12 @@ export default function ChatWidget() {
 
       {/* Chat Window */}
       {open && (
-        <div className="fixed bottom-36 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] h-[440px] max-h-[calc(100vh-10rem)] bg-[#1a1a1a] border border-tesla-border rounded-2xl shadow-2xl shadow-black/50 flex flex-col overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
+        <div 
+          className="fixed right-4 w-[340px] max-w-[calc(100vw-2rem)] h-[440px] max-h-[calc(100vh-10rem)] bg-[#1a1a1a] border border-tesla-border rounded-2xl shadow-2xl shadow-black/50 flex flex-col overflow-hidden"
+          style={{ position: 'fixed', bottom: '144px', right: '16px', zIndex: 9999 }}
+        >
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-tesla-border bg-[#111] shrink-0">
-            {/* Tesla T Logo */}
             <div className="w-9 h-9 rounded-full bg-[#CC0000]/15 border border-[#CC0000]/30 flex items-center justify-center shrink-0">
               <svg viewBox="0 0 24 24" className="w-5 h-5" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 5.362l2.475-3.026s4.245.09 8.471 2.054c-1.082 1.636-3.231 2.438-3.231 2.438-.146-1.439-1.154-1.79-4.354-1.79L12 24 8.619 5.034c-3.18 0-4.188.354-4.335 1.792 0 0-2.146-.795-3.229-2.43C5.28 2.431 9.525 2.34 9.525 2.34L12 5.362h-.004.004zm0-3.899c3.415-.03 7.326.528 11.328 2.28.535-.968.672-1.395.672-1.395C19.625.612 15.528.015 12 0 8.472.015 4.375.61 0 2.349c0 0 .195.525.672 1.396C4.674 1.989 8.585 1.435 12 1.46V1.463z" fill="#CC0000"/>
@@ -205,7 +240,6 @@ export default function ChatWidget() {
               </div>
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center gap-3">
-                {/* Tesla Logo */}
                 <div className="w-12 h-12 rounded-full bg-[#CC0000]/10 flex items-center justify-center">
                   <svg viewBox="0 0 24 24" className="w-7 h-7" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5.362l2.475-3.026s4.245.09 8.471 2.054c-1.082 1.636-3.231 2.438-3.231 2.438-.146-1.439-1.154-1.79-4.354-1.79L12 24 8.619 5.034c-3.18 0-4.188.354-4.335 1.792 0 0-2.146-.795-3.229-2.43C5.28 2.431 9.525 2.34 9.525 2.34L12 5.362h-.004.004zm0-3.899c3.415-.03 7.326.528 11.328 2.28.535-.968.672-1.395.672-1.395C19.625.612 15.528.015 12 0 8.472.015 4.375.61 0 2.349c0 0 .195.525.672 1.396C4.674 1.989 8.585 1.435 12 1.46V1.463z" fill="#CC0000"/>
@@ -285,5 +319,14 @@ export default function ChatWidget() {
         </div>
       )}
     </>
+  );
+}
+
+// Export wrapped in error boundary so a render crash never breaks the page
+export default function ChatWidget() {
+  return (
+    <ChatErrorBoundary>
+      <ChatWidgetInner />
+    </ChatErrorBoundary>
   );
 }

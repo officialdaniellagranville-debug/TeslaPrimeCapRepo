@@ -10,20 +10,17 @@ async function getHandler(request: NextRequest, _context: any, user: any) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search') || '';
 
-    // Get all users who have chat messages, with their last message and unread counts
-    const conversations = await db.chatMessage.groupBy({
-      by: ['userId'],
-      _max: { createdAt: true },
-      _count: { id: true },
-      orderBy: { _max: { createdAt: 'desc' } },
+    // Get all distinct userIds from chat messages (simpler query for SQLite compatibility)
+    const distinctUsers = await db.chatMessage.findMany({
+      distinct: ['userId'],
+      select: { userId: true },
     });
 
     // Enrich with user info and unread counts
     const enriched = await Promise.all(
-      conversations.map(async (conv) => {
+      distinctUsers.map(async (conv) => {
         const userInfo = await db.user.findUnique({
           where: { id: conv.userId },
-          include: { profile: true },
           select: { id: true, email: true, profile: { select: { firstName: true, lastName: true } } },
         });
 
@@ -39,6 +36,10 @@ async function getHandler(request: NextRequest, _context: any, user: any) {
         const lastMessage = await db.chatMessage.findFirst({
           where: { userId: conv.userId },
           orderBy: { createdAt: 'desc' },
+        });
+
+        const totalMessages = await db.chatMessage.count({
+          where: { userId: conv.userId },
         });
 
         const unreadAdmin = await db.chatMessage.count({
@@ -58,15 +59,24 @@ async function getHandler(request: NextRequest, _context: any, user: any) {
             senderType: lastMessage.senderType,
             createdAt: lastMessage.createdAt,
           } : null,
-          totalMessages: conv._count.id,
-          unreadByAdmin: unreadAdmin,   // messages from user that admin hasn't read
-          unreadByUser: unreadUser,     // messages from admin that user hasn't read
+          totalMessages,
+          unreadByAdmin: unreadAdmin,
+          unreadByUser: unreadUser,
         };
       })
     );
 
+    // Sort by last message time (most recent first)
+    const sorted = enriched
+      .filter(Boolean)
+      .sort((a, b) => {
+        const aTime = a?.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt).getTime() : 0;
+        const bTime = b?.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+
     return apiResponse({
-      conversations: enriched.filter(Boolean),
+      conversations: sorted,
     });
   } catch (error) {
     console.error('Admin chat list error:', error);
@@ -110,14 +120,18 @@ async function postHandler(request: NextRequest, _context: any, adminUser: any) 
     });
 
     // Also create an in-app notification for the user
-    await db.notification.create({
-      data: {
-        userId,
-        type: 'custom',
-        title: 'Support Message',
-        message: `Tesla Support: ${message.substring(0, 100)}${message.length > 100 ? '...' : ''}`,
-      },
-    });
+    try {
+      await db.notification.create({
+        data: {
+          userId,
+          type: 'custom',
+          title: 'Support Message',
+          message: `Tesla Support: ${message.substring(0, 100)}${message.length > 100 ? '...' : ''}`,
+        },
+      });
+    } catch (notifErr) {
+      console.error('Failed to create chat notification (non-blocking):', notifErr);
+    }
 
     return apiResponse(chatMessage, 201);
   } catch (error) {
