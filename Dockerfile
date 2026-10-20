@@ -103,4 +103,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
   CMD node -e "require('http').get('http://localhost:3000/api/health',(r)=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"
 
 CMD ["/app/start.sh"]
-# Build trigger: Tue Oct 20 11:11:59 UTC 2026
+# Build trigger: Tue Oct 20 15:12:22 UTC 2026
