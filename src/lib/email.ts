@@ -19,7 +19,10 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY || RESEND_KEY;
 // When using Resend without a custom verified domain, fall back to Resend's default sender.
 // To use your own domain, verify it at resend.com/domains and set EMAIL_FROM=you@yourdomain.com
 const RESEND_DEFAULT_FROM = 'TeslaPrime Support <onboarding@resend.dev>';
-const FROM_EMAIL = process.env.EMAIL_FROM || (RESEND_API_KEY ? 'onboarding@resend.dev' : SMTP_EMAIL);
+// Use custom domain if EMAIL_FROM is set, otherwise fall back to onboarding@resend.dev
+// This allows the app to work immediately with onboarding@resend.dev while domain verification is pending
+const _customFrom = process.env.EMAIL_FROM || '';
+const FROM_EMAIL = _customFrom && _customFrom !== 'onboarding@resend.dev' ? _customFrom : (RESEND_API_KEY ? 'onboarding@resend.dev' : SMTP_EMAIL);
 
 // ─── SMTP Fallback ───
 // Gmail SMTP works on VPS/local servers (port 587 with TLS).
@@ -190,32 +193,41 @@ async function sendEmail(to: string, subject: string, html: string): Promise<{ s
     }
   }
 
-  // 2) Try Resend (HTTPS API)
+  // 2) Try Resend (HTTPS API) — tries custom domain first, falls back to onboarding@resend.dev
   if (USE_RESEND) {
-    try {
-      const client = getResendClient();
-      // CRITICAL: Resend SDK returns { data, error } and does NOT throw on failure.
-      const { data, error } = await client.emails.send({
-        from: `"${FROM_NAME}" <${SAFE_FROM_EMAIL}>`,
-        to: [to],
-        subject,
-        html,
-      }) as { data: { id?: string } | null; error: { message?: string; name?: string } | null };
+    const sendFromAddresses = [SAFE_FROM_EMAIL];
+    // If using a custom domain, also try onboarding@resend.dev as fallback
+    if (SAFE_FROM_EMAIL !== 'onboarding@resend.dev') {
+      sendFromAddresses.push('onboarding@resend.dev');
+    }
 
-      if (error) {
-        console.error(`[EMAIL/RESEND] API returned error for ${to}: ${error.name || 'Error'} — ${error.message || JSON.stringify(error)}`);
-        attempts.push({ provider: 'resend', success: false, error: `${error.name || 'Error'}: ${error.message || JSON.stringify(error)}` });
-      } else if (data?.id) {
-        console.log(`[EMAIL/RESEND] Sent to ${to}: "${subject}" — id: ${data.id}`);
-        attempts.push({ provider: 'resend', success: true });
-        return { success: true, messageId: data.id, provider: 'resend', attempts };
-      } else {
-        console.error(`[EMAIL/RESEND] Unexpected response for ${to}: ${JSON.stringify(data)}`);
-        attempts.push({ provider: 'resend', success: false, error: `Unexpected response: ${JSON.stringify(data)}` });
+    for (const fromEmail of sendFromAddresses) {
+      try {
+        const client = getResendClient();
+        const { data, error } = await client.emails.send({
+          from: `"${FROM_NAME}" <${fromEmail}>`,
+          to: [to],
+          subject,
+          html,
+        }) as { data: { id?: string } | null; error: { message?: string; name?: string } | null };
+
+        if (error) {
+          console.error(`[EMAIL/RESEND] ${fromEmail} failed for ${to}: ${error.name} — ${(error.message || '').substring(0, 100)}`);
+          attempts.push({ provider: `resend-${fromEmail}`, success: false, error: `${error.name}: ${(error.message || '').substring(0, 100)}` });
+          continue; // Try next from address
+        } else if (data?.id) {
+          console.log(`[EMAIL/RESEND] Sent to ${to} from ${fromEmail}: "${subject}" — id: ${data.id}`);
+          attempts.push({ provider: 'resend', success: true });
+          return { success: true, messageId: data.id, provider: 'resend', attempts };
+        } else {
+          console.error(`[EMAIL/RESEND] Unexpected response for ${to}: ${JSON.stringify(data)}`);
+          attempts.push({ provider: `resend-${fromEmail}`, success: false, error: 'Unexpected response' });
+          continue;
+        }
+      } catch (error: any) {
+        console.error(`[EMAIL/RESEND] ${fromEmail} threw for ${to}: ${(error?.message || '').substring(0, 100)}`);
+        attempts.push({ provider: `resend-${fromEmail}`, success: false, error: (error?.message || '').substring(0, 100) || String(error) });
       }
-    } catch (error: any) {
-      console.error(`[EMAIL/RESEND] Threw error sending to ${to}: ${error?.message || error}`);
-      attempts.push({ provider: 'resend', success: false, error: error?.message || String(error) });
     }
   }
 
