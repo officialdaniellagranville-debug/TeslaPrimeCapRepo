@@ -7,11 +7,9 @@ echo "========================================"
 # ============================================
 # SET MISSING ENV VARS (runtime defaults)
 # ============================================
-# Resend API key — set at runtime so it's not in source code
+# Resend API key — must be set in Railway/env vars
 if [ -z "$RESEND_API_KEY" ]; then
-  RESEND_API_KEY="$(echo PLACEHOLDER_RESEND_KEY)"
-  export RESEND_API_KEY
-  echo "[startup] RESEND_API_KEY set from runtime default"
+  echo "[startup] WARNING: RESEND_API_KEY is NOT SET. Email will not work. Set it in Railway Variables."
 fi
 if [ -z "$JWT_SECRET" ]; then
   JWT_SECRET="tpc_jwt_70d1fb87f6814d46adae336433c68cc0"
