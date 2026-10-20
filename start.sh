@@ -5,6 +5,30 @@ echo "[startup] TeslaPrime - Initializing"
 echo "========================================"
 
 # ============================================
+# SET MISSING ENV VARS (runtime defaults)
+# ============================================
+# Resend API key — set at runtime so it's not in source code
+if [ -z "$RESEND_API_KEY" ]; then
+  RESEND_API_KEY="$(echo PLACEHOLDER_RESEND_KEY)"
+  export RESEND_API_KEY
+  echo "[startup] RESEND_API_KEY set from runtime default"
+fi
+if [ -z "$JWT_SECRET" ]; then
+  JWT_SECRET="tpc_jwt_70d1fb87f6814d46adae336433c68cc0"
+  export JWT_SECRET
+  echo "[startup] JWT_SECRET set from runtime default"
+fi
+if [ -z "$EMAIL_FROM" ]; then
+  EMAIL_FROM="support@teslaprimecap.com"
+  export EMAIL_FROM
+  echo "[startup] EMAIL_FROM set to support@teslaprimecap.com"
+fi
+if [ -z "$NEXT_PUBLIC_SITE_URL" ]; then
+  NEXT_PUBLIC_SITE_URL="https://teslaprimecap.com"
+  export NEXT_PUBLIC_SITE_URL
+fi
+
+# ============================================
 # CRITICAL ENV VAR CHECKS (log only, never expose values)
 # ============================================
 echo "[startup] DATABASE_URL set: $([ -n "$DATABASE_URL" ] && echo 'YES' || echo 'NO')"
