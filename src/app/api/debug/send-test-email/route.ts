@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendVerificationEmail } from '@/lib/email';
 import { generateOtpCode } from '@/lib/auth';
+import { debugGate } from '@/lib/debug-gate';
 
 /**
  * GET /api/debug/send-test-email?email=user@example.com
@@ -20,6 +21,9 @@ import { generateOtpCode } from '@/lib/auth';
 const LAST_SEND: { time: number; email: string } = { time: 0, email: '' };
 
 export async function GET(request: NextRequest) {
+  const gate = debugGate();
+  if (gate) return gate;
+
   const { searchParams } = new URL(request.url);
   const email = searchParams.get('email');
 

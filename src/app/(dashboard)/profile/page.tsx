@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
 import { api } from '@/lib/api';
-import ChatWidget from '@/components/ChatWidget';
 
 const menuItems = [
   { label: 'Dashboard', href: '/dashboard', iconPath: 'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' },
@@ -201,8 +200,6 @@ export default function ProfilePage() {
           Withdraw
         </Link>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

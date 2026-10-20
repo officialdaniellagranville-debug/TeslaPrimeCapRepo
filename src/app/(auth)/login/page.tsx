@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 import { useAuthStore } from '@/store/useAuthStore';
 import TeslaLogo from '@/components/TeslaLogo';
 import TurnstileWidget from '@/components/TurnstileWidget';
@@ -309,8 +308,7 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -437,7 +435,6 @@ export default function LoginPage() {
           &copy; {new Date().getFullYear()} TeslaPrime. All rights reserved.
         </p>
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

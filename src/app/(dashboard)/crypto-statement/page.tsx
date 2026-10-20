@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface CryptoTxn { id: string; type: string; amount: number; cryptoAmount?: number; cryptoSymbol?: string; usdEquivalent?: number; status: string; description?: string; createdAt: string; }
 
@@ -48,7 +47,6 @@ export default function CryptoStatementPage() {
           <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="border-b border-border bg-white/[0.02]"><th className="text-left text-gray-500 font-medium px-4 py-3">Date</th><th className="text-left text-gray-500 font-medium px-4 py-3">Description</th><th className="text-right text-gray-500 font-medium px-4 py-3">Crypto</th><th className="text-right text-gray-500 font-medium px-4 py-3">USD Value</th><th className="text-right text-gray-500 font-medium px-4 py-3">Status</th></tr></thead><tbody>{filtered.map(t => (<tr key={t.id} className="border-b border-border/50 last:border-0 hover:bg-white/[0.02]"><td className="text-gray-300 px-4 py-3 text-xs whitespace-nowrap">{new Date(t.createdAt).toLocaleDateString()}</td><td className="text-white px-4 py-3 text-xs capitalize max-w-[160px] truncate">{t.description || t.type}</td><td className="text-[#60A5FA] px-4 py-3 text-right text-xs font-medium">{t.cryptoAmount?.toFixed(6) || '—'} {t.cryptoSymbol || ''}</td><td className={`px-4 py-3 text-right font-medium text-xs ${(t.type === 'buy' || t.type === 'credit') ? 'text-green-400' : 'text-red-400'}`}>${(t.usdEquivalent || t.amount)?.toFixed(2)}</td><td className="px-4 py-3 text-right">{statusBadge(t.status)}</td></tr>))}</tbody></table></div>
         )}
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

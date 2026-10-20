@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, ReactNode } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 import { useAuthStore } from '@/store/useAuthStore';
 
 interface Notification {
@@ -217,8 +216,6 @@ export default function NotificationsPage() {
           ))}
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import ChatWidget from '@/components/ChatWidget';
 import { CreditCard, ShoppingBag, Check, Truck, Zap, Shield, Globe } from 'lucide-react';
 
 const PHYSICAL_OPTIONS = [
@@ -92,8 +91,7 @@ export default function ApplyForCardPage() {
           <Link href="/cards/manage" className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold py-3 rounded-xl text-center transition-colors">Manage Card</Link>
           <Link href="/cards" className="flex-1 bg-white/5 border border-white/10 text-white text-sm font-semibold py-3 rounded-xl text-center transition-colors">Back to Cards</Link>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -108,8 +106,7 @@ export default function ApplyForCardPage() {
           <Link href="/cards/tracking" className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-semibold py-3 rounded-xl text-center transition-colors flex items-center justify-center gap-2"><Truck className="w-4 h-4" /> Track Delivery</Link>
           <Link href="/cards" className="flex-1 bg-white/5 border border-white/10 text-white text-sm font-semibold py-3 rounded-xl text-center transition-colors">Back to Cards</Link>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -191,7 +188,6 @@ export default function ApplyForCardPage() {
           </button>
         </div>
       )}
-      <ChatWidget />
-    </div>
+</div>
   );
 }

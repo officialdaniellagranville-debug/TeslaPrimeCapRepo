@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { debugGate } from '@/lib/debug-gate';
 
 export const dynamic = 'force-dynamic';
 
-// TEMPORARY diagnostic endpoint — REMOVE AFTER DEBUGGING
-// Call GET /api/debug/db-test to see exactly what fails
+// TEMPORARY diagnostic endpoint — blocked in production
 export async function GET() {
+  const gate = debugGate();
+  if (gate) return gate;
   const results: Record<string, any> = { timestamp: new Date().toISOString() };
 
   // 1. Env vars

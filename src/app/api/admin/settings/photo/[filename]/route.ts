@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { requireRole } from '@/lib/api-helpers';
 
-// Serve uploaded photos from /tmp/uploads (legacy) or decode base64 data URLs
-export async function GET(
+// Serve uploaded photos — requires admin auth
+async function getHandler(
   _request: NextRequest,
-  { params }: { params: Promise<{ filename: string }> }
+  { params }: { params: Promise<{ filename: string }> },
+  _user: any
 ) {
   try {
     const { filename } = await params;
@@ -38,7 +40,6 @@ export async function GET(
       });
     } catch {
       // File not in /tmp/uploads — return 404
-      // New photos are stored as base64 data URLs in the DB, not on filesystem
     }
 
     return new NextResponse('Image not found', { status: 404 });
@@ -46,3 +47,5 @@ export async function GET(
     return new NextResponse('Image not found', { status: 404 });
   }
 }
+
+export const GET = requireRole('SUPER_ADMIN', 'ADMIN')(getHandler as any);

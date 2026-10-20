@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface Beneficiary { id: string; name: string; bankName: string; accountNumber: string; swiftCode?: string; country?: string; }
 interface Wallet { id: string; type: string; balance: number; }
@@ -101,7 +100,6 @@ export default function WireTransferPage() {
           </>
         )}
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

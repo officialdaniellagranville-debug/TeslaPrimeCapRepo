@@ -25,11 +25,16 @@ export async function getSessionUser(request: NextRequest) {
 
 export function requireAuth(handler: (request: NextRequest, context: any, user: any) => Promise<NextResponse>) {
   return async (request: NextRequest, context: any) => {
-    const user = await getSessionUser(request);
-    if (!user) {
-      return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
+    try {
+      const user = await getSessionUser(request);
+      if (!user) {
+        return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
+      }
+      return await handler(request, context, user);
+    } catch (error) {
+      console.error('[requireAuth] Unhandled error:', error);
+      return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } }, { status: 500 });
     }
-    return handler(request, context, user);
   };
 }
 
@@ -43,22 +48,27 @@ const ROLE_HIERARCHY: Record<string, number> = {
 export function requireRole(...roles: string[]) {
   return (handler: (request: NextRequest, context: any, user: any) => Promise<NextResponse>) => {
     return async (request: NextRequest, context: any) => {
-      const user = await getSessionUser(request);
-      if (!user) {
-        return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
-      }
-      if (user.adminRecord) {
-        const userLevel = ROLE_HIERARCHY[user.adminRecord.role] || 0;
-        const requiredLevel = Math.max(...roles.map(r => ROLE_HIERARCHY[r] || 0));
-        if (userLevel < requiredLevel) {
-          return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Insufficient permissions' } }, { status: 403 });
+      try {
+        const user = await getSessionUser(request);
+        if (!user) {
+          return NextResponse.json({ success: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } }, { status: 401 });
         }
-      } else {
-        if (roles.length > 0) {
-          return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Admin access required' } }, { status: 403 });
+        if (user.adminRecord) {
+          const userLevel = ROLE_HIERARCHY[user.adminRecord.role] || 0;
+          const requiredLevel = Math.max(...roles.map(r => ROLE_HIERARCHY[r] || 0));
+          if (userLevel < requiredLevel) {
+            return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Insufficient permissions' } }, { status: 403 });
+          }
+        } else {
+          if (roles.length > 0) {
+            return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Admin access required' } }, { status: 403 });
+          }
         }
+        return await handler(request, context, user);
+      } catch (error) {
+        console.error('[requireRole] Unhandled error:', error);
+        return NextResponse.json({ success: false, error: { code: 'INTERNAL_ERROR', message: 'Internal server error' } }, { status: 500 });
       }
-      return handler(request, context, user);
     };
   };
 }

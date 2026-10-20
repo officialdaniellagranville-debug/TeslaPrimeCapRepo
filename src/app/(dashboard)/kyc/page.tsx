@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, Component, type ReactNode, type ErrorInfo } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 import TeslaLogo from '@/components/TeslaLogo';
 import { useAuthStore } from '@/store/useAuthStore';
 import { api } from '@/lib/api';
@@ -772,9 +771,7 @@ function KycPageInner() {
           </div>
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }
 

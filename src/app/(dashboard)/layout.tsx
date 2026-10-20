@@ -4,11 +4,13 @@ import { type ReactNode, Component, type ErrorInfo, useState, useEffect, useCall
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Sun, Moon } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import TeslaLogo from '@/components/TeslaLogo';
-import ChatWidget from '@/components/ChatWidget';
 import NotificationWatcher from '@/components/NotificationWatcher';
 import KycCodeGate from '@/components/KycCodeGate';
 import { useAuthStore } from '@/store/useAuthStore';
+
+const GoogleTranslate = dynamic(() => import('@/components/GoogleTranslate'), { ssr: false });
 
 // ── Error Boundary to prevent full-page crash ──
 interface Props { children: ReactNode; }
@@ -60,6 +62,18 @@ const titles: Record<string, string> = {
   '/transactions': 'Transaction History',
   '/vehicles': 'Tesla Vehicles',
   '/tracking': 'Track Vehicle',
+  '/cards': 'Cards',
+  '/beneficiaries': 'Beneficiaries',
+  '/pay-bills': 'Pay Bills',
+  '/wire-transfer': 'Wire Transfer',
+  '/internal-transfer': 'Internal Transfer',
+  '/receive-funds': 'Receive Funds',
+  '/link-bank': 'Link Bank',
+  '/buy-crypto': 'Buy Crypto',
+  '/savings-statement': 'Savings Statement',
+  '/checking-statement': 'Checking Statement',
+  '/crypto-statement': 'Crypto Statement',
+  '/tax-refund': 'Tax Refund',
 };
 
 const bottomNav = [
@@ -179,6 +193,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
               </button>
+              <GoogleTranslate />
               <Link href="/profile" className="w-8 h-8 rounded-full bg-[#CC0000] flex items-center justify-center text-white text-xs font-bold overflow-hidden shrink-0">
                 {userAvatarUrl ? (
                   <img src={userAvatarUrl} alt={userInitials} className="w-full h-full object-cover" />
@@ -206,7 +221,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             })}
           </div>
         </nav>
-        <ChatWidget />
         <NotificationWatcher onUnreadChange={handleUnreadChange} onNewNotification={handleNewNotification} />
         
         {/* In-app notification toast */}

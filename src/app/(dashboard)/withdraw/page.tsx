@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export default function WithdrawPage() {
@@ -234,8 +233,6 @@ export default function WithdrawPage() {
           </div>
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

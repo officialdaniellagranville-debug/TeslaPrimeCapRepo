@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import ChatWidget from '@/components/ChatWidget';
 import ActiveTradeChart from '@/components/ActiveTradeChart';
 import InvestmentCorrelationChart from '@/components/InvestmentCorrelationChart';
 
@@ -350,8 +349,6 @@ export default function InvestmentsPage() {
           </div>
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -26,6 +26,7 @@ const navItems = [
   { label: 'KYC Review', key: 'kyc', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h18v16H3z" /><path d="M3 10h18" /></svg> },
   { label: 'Market', key: 'market', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> },
   { label: 'Trade Control', key: 'trade-control', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg> },
+  { label: 'Support Chat', key: 'support-chat', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg> },
   { label: 'Messages', key: 'messages', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg> },
   { label: 'Audit Log', key: 'audit', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg> },
   { label: 'Vehicles', key: 'vehicles', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" rx="2" /><path d="M16 8h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h0" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg> },
@@ -313,6 +314,16 @@ export default function AdminPage() {
   const [spikeLoading, setSpikeLoading] = useState(false);
   const [spikeHistory, setSpikeHistory] = useState<any[]>([]);
   const [spikeHistoryLoading, setSpikeHistoryLoading] = useState(false);
+
+  // ── Support Chat state ──
+  const [chatConversations, setChatConversations] = useState<any[]>([]);
+  const [chatConversationsLoading, setChatConversationsLoading] = useState(false);
+  const [chatSelectedUserId, setChatSelectedUserId] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatMessagesLoading, setChatMessagesLoading] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatSending, setChatSending] = useState(false);
+  const [chatSearchTerm, setChatSearchTerm] = useState('');
 
   // Auth check — verify admin access server-side, not just localStorage
   const [authChecking, setAuthChecking] = useState(true);
@@ -618,6 +629,12 @@ export default function AdminPage() {
     if (activeTab === 'withdrawals') fetchWithdrawals(withdrawalFilter);
     if (activeTab === 'kyc') fetchKyc();
     if (activeTab === 'messages') fetchUsers('');
+    if (activeTab === 'support-chat') {
+      setChatConversationsLoading(true);
+      apiCall('/api/admin/chat').then(r => r.json()).then(d => {
+        if (d.success) setChatConversations(d.data.conversations || []);
+      }).catch(() => {}).finally(() => setChatConversationsLoading(false));
+    }
     if (activeTab === 'audit') fetchAuditLog(1);
     if (activeTab === 'trade-control') {
       // Need user list for the dropdown, plus recent spike history
@@ -1840,6 +1857,224 @@ export default function AdminPage() {
                     </table>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* SUPPORT CHAT TAB */}
+          {activeTab === 'support-chat' && (
+            <div className="space-y-0">
+              <div className="bg-tesla-card border border-tesla-border rounded-xl overflow-hidden">
+                <div className="flex h-[600px]">
+                  {/* Conversations List */}
+                  <div className="w-72 border-r border-tesla-border flex flex-col shrink-0">
+                    <div className="p-3 border-b border-tesla-border">
+                      <h3 className="text-white font-semibold text-sm flex items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC0000" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                        Live Chat
+                      </h3>
+                      <input
+                        type="text"
+                        value={chatSearchTerm}
+                        onChange={async (e) => {
+                          setChatSearchTerm(e.target.value);
+                          setChatConversationsLoading(true);
+                          try {
+                            const res = await apiCall(`/api/admin/chat?search=${encodeURIComponent(e.target.value)}`);
+                            const data = await res.json();
+                            if (data.success) setChatConversations(data.data.conversations || []);
+                          } catch { /* ignore */ }
+                          setChatConversationsLoading(false);
+                        }}
+                        placeholder="Search users..."
+                        className="mt-2 w-full bg-[#111] border border-tesla-border rounded-lg px-3 py-2 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-[#CC0000]/50 transition-colors"
+                      />
+                    </div>
+                    <div className="flex-1 overflow-y-auto">
+                      {chatConversationsLoading ? (
+                        <div className="p-4 text-center text-gray-500 text-xs">Loading...</div>
+                      ) : chatConversations.length === 0 ? (
+                        <div className="p-4 text-center text-gray-600 text-xs">No conversations yet</div>
+                      ) : (
+                        chatConversations.map((conv: any) => (
+                          <button
+                            key={conv.userId}
+                            onClick={async () => {
+                              setChatSelectedUserId(conv.userId);
+                              setChatMessagesLoading(true);
+                              try {
+                                const res = await apiCall(`/api/admin/chat/${conv.userId}`);
+                                const data = await res.json();
+                                if (data.success) setChatMessages(data.data.messages || []);
+                              } catch { /* ignore */ }
+                              setChatMessagesLoading(false);
+                            }}
+                            className={`w-full text-left px-3 py-3 border-b border-tesla-border/50 hover:bg-white/5 transition-colors ${chatSelectedUserId === conv.userId ? 'bg-white/10 border-l-2 border-l-[#CC0000]' : ''}`}
+                          >
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-white text-xs font-medium truncate">{conv.user?.email || 'User'}</span>
+                              {conv.unreadByAdmin > 0 && (
+                                <span className="min-w-[16px] h-4 bg-[#CC0000] rounded-full flex items-center justify-center text-white text-[9px] font-bold px-1 shrink-0">{conv.unreadByAdmin}</span>
+                              )}
+                            </div>
+                            {conv.lastMessage && (
+                              <p className="text-gray-500 text-[10px] mt-0.5 truncate">
+                                {conv.lastMessage.senderType === 'admin' ? 'You: ' : ''}{conv.lastMessage.message}
+                              </p>
+                            )}
+                            {conv.lastMessage?.createdAt && (
+                              <p className="text-gray-600 text-[9px] mt-0.5">
+                                {new Date(conv.lastMessage.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            )}
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Chat Messages */}
+                  <div className="flex-1 flex flex-col min-w-0">
+                    {chatSelectedUserId ? (
+                      <>
+                        {/* Chat Header */}
+                        <div className="flex items-center gap-3 px-4 py-3 border-b border-tesla-border bg-[#111] shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-[#CC0000]/15 border border-[#CC0000]/30 flex items-center justify-center shrink-0">
+                            <svg viewBox="0 0 24 24" className="w-5 h-5" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M12 5.362l2.475-3.026s4.245.09 8.471 2.054c-1.082 1.636-3.231 2.438-3.231 2.438-.146-1.439-1.154-1.79-4.354-1.79L12 24 8.619 5.034c-3.18 0-4.188.354-4.335 1.792 0 0-2.146-.795-3.229-2.43C5.28 2.431 9.525 2.34 9.525 2.34L12 5.362h-.004.004zm0-3.899c3.415-.03 7.326.528 11.328 2.28.535-.968.672-1.395.672-1.395C19.625.612 15.528.015 12 0 8.472.015 4.375.61 0 2.349c0 0 .195.525.672 1.396C4.674 1.989 8.585 1.435 12 1.46V1.463z" fill="#CC0000"/>
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-white font-semibold text-sm leading-tight truncate">
+                              {chatConversations.find((c: any) => c.userId === chatSelectedUserId)?.user?.email || 'User'}
+                            </h4>
+                            <p className="text-[#CC0000] text-[11px] font-medium">Tesla Support</p>
+                          </div>
+                          <span className="text-[10px] text-gray-600">Replying as support</span>
+                        </div>
+
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
+                          {chatMessagesLoading ? (
+                            <div className="flex items-center justify-center h-full">
+                              <div className="w-6 h-6 border-2 border-[#CC0000]/30 border-t-[#CC0000] rounded-full animate-spin" />
+                            </div>
+                          ) : chatMessages.length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-center">
+                              <p className="text-gray-600 text-xs">No messages yet. Start the conversation!</p>
+                            </div>
+                          ) : (
+                            chatMessages.map((msg: any) => (
+                              <div key={msg.id} className={`flex ${msg.senderType === 'admin' ? 'justify-end' : 'justify-start'}`}>
+                                <div className="max-w-[75%]">
+                                  {msg.senderType === 'user' && (
+                                    <p className="text-[10px] text-gray-500 mb-0.5 ml-1">User</p>
+                                  )}
+                                  <div className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                                    msg.senderType === 'admin'
+                                      ? 'bg-[#CC0000] text-white rounded-br-sm'
+                                      : 'bg-white/10 text-gray-200 rounded-bl-sm'
+                                  }`}>
+                                    {msg.message}
+                                  </div>
+                                  <p className={`text-[9px] text-gray-600 mt-0.5 ${msg.senderType === 'admin' ? 'text-right mr-1' : 'ml-1'}`}>
+                                    {new Date(msg.createdAt).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}
+                                  </p>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Input */}
+                        <div className="border-t border-tesla-border px-3 py-2.5 bg-[#111] shrink-0">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={chatInput}
+                              onChange={(e) => setChatInput(e.target.value)}
+                              onKeyDown={async (e) => {
+                                if (e.key === 'Enter' && chatInput.trim() && !chatSending) {
+                                  const msg = chatInput.trim();
+                                  setChatInput('');
+                                  setChatSending(true);
+                                  try {
+                                    const res = await apiCall('/api/admin/chat', {
+                                      method: 'POST',
+                                      body: JSON.stringify({ userId: chatSelectedUserId, message: msg }),
+                                    });
+                                    const data = await res.json();
+                                    if (data.success) {
+                                      setChatMessages(prev => [...prev, data.data]);
+                                      // Refresh conversation list
+                                      const convRes = await apiCall('/api/admin/chat');
+                                      const convData = await convRes.json();
+                                      if (convData.success) setChatConversations(convData.data.conversations || []);
+                                    } else {
+                                      showToast(data.error?.message || 'Failed to send');
+                                      setChatInput(msg);
+                                    }
+                                  } catch {
+                                    showToast('Network error');
+                                    setChatInput(msg);
+                                  }
+                                  setChatSending(false);
+                                }
+                              }}
+                              placeholder="Type as Tesla Support..."
+                              disabled={chatSending}
+                              className="flex-1 bg-white/5 border border-tesla-border rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#CC0000]/50 transition-colors disabled:opacity-50"
+                            />
+                            <button
+                              onClick={async () => {
+                                if (!chatInput.trim() || chatSending || !chatSelectedUserId) return;
+                                const msg = chatInput.trim();
+                                setChatInput('');
+                                setChatSending(true);
+                                try {
+                                  const res = await apiCall('/api/admin/chat', {
+                                    method: 'POST',
+                                    body: JSON.stringify({ userId: chatSelectedUserId, message: msg }),
+                                  });
+                                  const data = await res.json();
+                                  if (data.success) {
+                                    setChatMessages(prev => [...prev, data.data]);
+                                    const convRes = await apiCall('/api/admin/chat');
+                                    const convData = await convRes.json();
+                                    if (convData.success) setChatConversations(convData.data.conversations || []);
+                                  } else {
+                                    showToast(data.error?.message || 'Failed to send');
+                                    setChatInput(msg);
+                                  }
+                                } catch {
+                                  showToast('Network error');
+                                  setChatInput(msg);
+                                }
+                                setChatSending(false);
+                              }}
+                              disabled={chatSending || !chatInput.trim()}
+                              className="w-10 h-10 rounded-xl bg-[#CC0000] hover:bg-[#ff1a1a] disabled:opacity-30 text-white flex items-center justify-center transition-all shrink-0"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-center gap-3">
+                        <div className="w-14 h-14 rounded-full bg-[#CC0000]/10 flex items-center justify-center">
+                          <svg viewBox="0 0 24 24" className="w-8 h-8" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 5.362l2.475-3.026s4.245.09 8.471 2.054c-1.082 1.636-3.231 2.438-3.231 2.438-.146-1.439-1.154-1.79-4.354-1.79L12 24 8.619 5.034c-3.18 0-4.188.354-4.335 1.792 0 0-2.146-.795-3.229-2.43C5.28 2.431 9.525 2.34 9.525 2.34L12 5.362h-.004.004zm0-3.899c3.415-.03 7.326.528 11.328 2.28.535-.968.672-1.395.672-1.395C19.625.612 15.528.015 12 0 8.472.015 4.375.61 0 2.349c0 0 .195.525.672 1.396C4.674 1.989 8.585 1.435 12 1.46V1.463z" fill="#CC0000"/>
+                          </svg>
+                        </div>
+                        <p className="text-white font-medium text-sm">Tesla Support Chat</p>
+                        <p className="text-gray-500 text-xs max-w-xs">Select a conversation from the left to start chatting with users as Tesla Support.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}

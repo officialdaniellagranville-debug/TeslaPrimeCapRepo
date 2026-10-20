@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 import { useAuthStore } from '@/store/useAuthStore';
 
 const markets = [
@@ -187,8 +186,6 @@ export default function ReferralPage() {
           ))}
         </div>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -57,6 +57,7 @@ export async function POST(request: NextRequest) {
           message: `Verification code generated but email delivery failed: ${emailErr?.message || 'email not configured'}`,
           emailSent: false,
           verificationCode: otp,
+          otp,
         });
       }
 

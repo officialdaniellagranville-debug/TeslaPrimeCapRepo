@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { verifyPassword } from '@/lib/auth';
+import { debugGate } from '@/lib/debug-gate';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const gate = debugGate();
+  if (gate) return gate;
   const steps: string[] = [];
 
   try {

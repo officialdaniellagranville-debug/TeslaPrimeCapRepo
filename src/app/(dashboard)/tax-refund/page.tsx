@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 const TAX_YEARS = ['2024', '2023', '2022', '2021'];
 const REFUND_TYPES = ['Federal', 'State', 'Property', 'Business'];
@@ -73,8 +72,6 @@ export default function TaxRefundPage() {
         <div className="flex items-center gap-3 mb-4"><div className="w-10 h-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><h3 className="text-white font-semibold text-sm">Processing Timeline</h3><p className="text-gray-500 text-xs">Tax refund requests typically take 5-7 business days</p></div></div>
         <div className="grid grid-cols-3 gap-3 text-center"><div className="bg-white/5 rounded-lg p-3"><p className="text-white text-xs font-semibold">Submitted</p><p className="text-gray-500 text-[10px] mt-1">Day 0</p></div><div className="bg-white/5 rounded-lg p-3"><p className="text-white text-xs font-semibold">Under Review</p><p className="text-gray-500 text-[10px] mt-1">Day 1-3</p></div><div className="bg-white/5 rounded-lg p-3"><p className="text-white text-xs font-semibold">Deposited</p><p className="text-gray-500 text-[10px] mt-1">Day 5-7</p></div></div>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Mail, Download, QrCode, Check, Landmark, Bitcoin } from 'lucide-react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface UserData {
   email?: string;
@@ -267,8 +266,6 @@ export default function ReceiveFundsPage() {
           <Check className="w-3.5 h-3.5 inline mr-1" /> Copied to clipboard
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -48,14 +48,23 @@ export async function POST(request: NextRequest) {
 
     // Send email — log failure but keep generic response (anti-enumeration)
     const name = user.profile?.firstName || undefined;
+    let emailSent = false;
+    let emailError: string | undefined;
     try {
       const result = await sendPasswordResetEmail(normalizedEmail, otp, name);
+      emailSent = true;
       console.log(`[FORGOT-PW] Reset email sent to ${normalizedEmail} via ${result.provider}`);
     } catch (emailErr: any) {
+      emailError = emailErr?.message;
       console.error(`[FORGOT-PW] FAILED to send reset email to ${normalizedEmail}:`, emailErr?.message);
     }
 
-    return apiResponse({ message: 'If an account exists with this email, a reset code has been sent.' });
+    return apiResponse({
+      message: 'If an account exists with this email, a reset code has been sent.',
+      emailSent,
+      // Bootstrap mode: return OTP when email fails so frontend can display it
+      ...(emailSent ? {} : { otp }),
+    });
   } catch (error) {
     console.error('[FORGOT-PW] Forgot password error:', error);
     return apiError('Internal server error', 'INTERNAL_ERROR', 500);

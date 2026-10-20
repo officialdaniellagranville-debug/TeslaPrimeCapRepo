@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
+import { debugGate } from '@/lib/debug-gate';
 
 /**
  * GET /api/debug/email-html
  *
- * PUBLIC endpoint — returns the EXACT HTML that gets sent in verification emails.
- * Use this to verify the logo URL, colors, and template structure being sent.
- *
- * Does NOT send an actual email.
+ * Debug endpoint — returns the EXACT HTML that gets sent in verification emails.
+ * Blocked in production.
  */
 export async function GET() {
+  const gate = debugGate();
+  if (gate) return gate;
+
   const { sendVerificationEmail } = await import('@/lib/email');
 
   // Monkey-patch fetch to capture the raw HTTP body sent to Gmail API

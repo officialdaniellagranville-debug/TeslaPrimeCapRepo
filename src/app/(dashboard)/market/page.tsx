@@ -2,7 +2,6 @@
 
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import dynamic from 'next/dynamic';
-import ChatWidget from '@/components/ChatWidget';
 
 // ── Safe wrapper for external widgets ──
 class WidgetErrorBoundary extends Component<{ children: ReactNode; fallback?: ReactNode }, { hasError: boolean }> {
@@ -171,8 +170,6 @@ export default function MarketPage() {
       <div className="text-center pt-2 pb-2">
         <p className="text-gray-700 text-[10px]">&copy; {new Date().getFullYear()} TeslaPrime. All rights reserved.</p>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

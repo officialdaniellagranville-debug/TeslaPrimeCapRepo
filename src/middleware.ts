@@ -27,6 +27,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Bank-admin routes protection (same as admin)
+  if (pathname.startsWith('/bank-admin')) {
+    const adminToken = request.cookies.get('adminToken') || request.cookies.get('token');
+    if (!adminToken || !adminToken.value) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = '/admin/login';
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
   // Dashboard and protected routes — check for token cookie
   const protectedPaths = [
     '/dashboard', '/deposit', '/withdraw', '/investments',
@@ -58,6 +69,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
+    '/bank-admin/:path*',
     '/dashboard/:path*', '/deposit/:path*', '/withdraw/:path*',
     '/investments/:path*', '/transactions/:path*', '/profile/:path*',
     '/security/:path*', '/kyc/:path*', '/notifications/:path*',

@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 import TeslaLogo from '@/components/TeslaLogo';
 import TurnstileWidget from '@/components/TurnstileWidget';
 
@@ -105,6 +104,13 @@ export default function RegisterPage() {
       if (res.ok) {
         if (data.data?.emailSent === false) {
           setVerifyError(data.data?.emailError || 'Verification email could not be sent. Use "Resend Code" below.');
+          // Bootstrap mode: auto-fill OTP when email fails so users can still verify
+          if (data.data?.otp) {
+            const otp = String(data.data.otp);
+            const newCode = [...otpCode];
+            otp.split('').forEach((char: string, i: number) => { if (i < 6) newCode[i] = char; });
+            setOtpCode(newCode);
+          }
         }
         setStep('verify');
         startResendTimer();
@@ -220,8 +226,7 @@ export default function RegisterPage() {
             Sign In Now
           </Link>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -324,8 +329,7 @@ export default function RegisterPage() {
             &copy; {new Date().getFullYear()} TeslaPrime. All rights reserved.
           </p>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -427,7 +431,6 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

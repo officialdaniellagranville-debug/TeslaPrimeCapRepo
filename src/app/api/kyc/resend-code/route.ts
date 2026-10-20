@@ -17,11 +17,20 @@ async function handler(request: NextRequest, _context: any, user: any) {
       ? `${user.profile.firstName || ''} ${user.profile.lastName || ''}`.trim()
       : '';
 
-    await sendKycCodeDeliveredEmail(user.email, fullName, {
-      code: user.kycVerificationCode,
-    });
-
-    return apiResponse({ message: 'Verification code has been resent to your email.' });
+    try {
+      await sendKycCodeDeliveredEmail(user.email, fullName, {
+        code: user.kycVerificationCode,
+      });
+      return apiResponse({ message: 'Verification code has been resent to your email.' });
+    } catch (emailErr: any) {
+      console.error('KYC resend email failed:', emailErr?.message);
+      // Still return the code in bootstrap mode when email fails
+      return apiResponse({
+        message: 'Email could not be sent, but your code is shown below.',
+        emailSent: false,
+        code: user.kycVerificationCode,
+      });
+    }
   } catch (error) {
     console.error('Resend KYC code error:', error);
     return apiError('Failed to resend code', 'RESEND_ERROR', 500);

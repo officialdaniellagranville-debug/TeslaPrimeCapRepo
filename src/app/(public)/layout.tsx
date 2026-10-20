@@ -7,7 +7,6 @@ import dynamic from 'next/dynamic';
 
 const TickerTapeWidget = dynamic(() => import('@/components/TickerTapeWidget'), { ssr: false });
 const GoogleTranslate = dynamic(() => import('@/components/GoogleTranslate'), { ssr: false });
-const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -367,7 +366,6 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </footer>
-      <ChatWidget />
     </div>
   );
 }

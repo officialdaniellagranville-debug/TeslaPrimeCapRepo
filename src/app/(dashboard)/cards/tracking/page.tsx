@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 import { Truck, Package, MapPin, Clock, Copy, Check, ArrowRight, CreditCard } from 'lucide-react';
 
 const STEPS = [
@@ -103,8 +102,6 @@ export default function TrackingPage() {
           </div>
         );
       })}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

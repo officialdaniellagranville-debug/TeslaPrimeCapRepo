@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface Beneficiary { id: string; name: string; bankName: string; accountNumber: string; routingNumber?: string; swiftCode?: string; country?: string; relationship?: string; createdAt: string; }
 
@@ -77,7 +76,6 @@ export default function BeneficiariesPage() {
           </div>
         ))}
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ChatWidgetLoader from "@/components/ChatWidgetLoader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`} suppressHydrationWarning>
       <body className="min-h-full min-h-[100dvh] bg-zinc-950 text-white overflow-x-hidden">
         {children}
+        <ChatWidgetLoader />
       </body>
     </html>
   );

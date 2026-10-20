@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { requireAuth, apiResponse, apiError } from '@/lib/api-helpers';
+import { rateLimit } from '@/lib/rate-limit';
 import { z } from 'zod';
 
 const confirmSchema = z.object({
@@ -13,6 +14,10 @@ const globalOtpStore = (globalThis as any).__verifyActionOtpStore || new Map<str
 (globalThis as any).__verifyActionOtpStore = globalOtpStore;
 
 async function postHandler(request: NextRequest, _context: any, user: any) {
+  // Rate limit to prevent OTP brute-force
+  const rateLimitResult = await rateLimit(request, true);
+  if (rateLimitResult) return rateLimitResult;
+
   try {
     const body = await request.json();
     const parsed = confirmSchema.safeParse(body);

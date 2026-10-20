@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 const CRYPTOS = [
   { id: 'btc', name: 'Bitcoin', symbol: 'BTC', price: 67432.50, color: '#F7931A', icon: '<circle cx="12" cy="12" r="10" /><text x="12" y="16" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">B</text>' },
@@ -98,7 +97,6 @@ export default function BuyCryptoPage() {
       </div>
 
       <button onClick={handleBuy} disabled={loading || usdAmount < 10} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3.5 rounded-xl transition-colors text-sm shadow-[0_4px_20px_rgba(124,58,237,0.3)]">{loading ? 'Processing...' : `Buy ${crypto.symbol}`}</button>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

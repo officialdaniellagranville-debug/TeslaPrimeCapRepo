@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import ChatWidget from '@/components/ChatWidget';
 import { CreditCard, Plus, Snowflake, ChevronRight, Shield, Eye, EyeOff, AlertCircle, Settings } from 'lucide-react';
 
 interface CardData {
@@ -364,8 +363,6 @@ export default function CardsPage() {
           </div>
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

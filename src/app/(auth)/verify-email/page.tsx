@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import ChatWidget from '@/components/ChatWidget';
 import TeslaLogo from '@/components/TeslaLogo';
 
 export default function VerifyEmailPage() {
@@ -160,8 +159,7 @@ export default function VerifyEmailPage() {
             Sign In Now
           </Link>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -270,7 +268,6 @@ export default function VerifyEmailPage() {
           &copy; {new Date().getFullYear()} TeslaPrime. All rights reserved.
         </p>
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }

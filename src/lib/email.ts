@@ -1,24 +1,29 @@
 import { Resend } from 'resend';
 import * as crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 // ─── CONFIGURATION ───
 // Provider priority (highest first):
 //   1a. Gmail API via Service Account (HTTPS) — set GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY
 //   1b. Gmail API via OAuth2 refresh token   — set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN
 //   2. Resend (HTTPS API)                    — set RESEND_API_KEY
+//   3. Gmail SMTP (fallback)                  — set SMTP_EMAIL + SMTP_PASSWORD
 //
-// ⛔ SMTP IS COMPLETELY REMOVED.
-// Railway (and most cloud platforms) block outbound SMTP on ports 25/465/587.
-// Gmail API and Resend use HTTPS — they work everywhere.
-// If you see "no email provider", set GMAIL_CLIENT_ID + GMAIL_CLIENT_SECRET +
-// GMAIL_REFRESH_TOKEN in your Railway environment variables.
+// Note: SMTP is a fallback. Gmail API and Resend use HTTPS and work everywhere.
+// SMTP may be blocked on Railway/cloud, but works on VPS and local servers.
 const SMTP_EMAIL = process.env.SMTP_EMAIL || 'teslaprimesupportt@gmail.com';
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD || '';
 const FROM_NAME = process.env.EMAIL_FROM_NAME || 'TeslaPrime Support';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 // When using Resend without a custom verified domain, fall back to Resend's default sender.
 // To use your own domain, verify it at resend.com/domains and set EMAIL_FROM=you@yourdomain.com
 const RESEND_DEFAULT_FROM = 'TeslaPrime Support <onboarding@resend.dev>';
 const FROM_EMAIL = process.env.EMAIL_FROM || (RESEND_API_KEY ? 'onboarding@resend.dev' : SMTP_EMAIL);
+
+// ─── SMTP Fallback ───
+// Gmail SMTP works on VPS/local servers (port 587 with TLS).
+// Blocked on Railway/cloud but useful as a last resort.
+const USE_SMTP = !!(SMTP_EMAIL && SMTP_PASSWORD);
 
 // ─── Gmail API Method A: Service Account (JWT) ───
 // Uses a Google Cloud service account to obtain access tokens via JWT assertion.
@@ -36,30 +41,37 @@ const GMAIL_CLIENT_ID = process.env.GMAIL_CLIENT_ID || '';
 const GMAIL_CLIENT_SECRET = process.env.GMAIL_CLIENT_SECRET || '';
 const GMAIL_REFRESH_TOKEN = process.env.GMAIL_REFRESH_TOKEN || '';
 
-// Determine provider — priority: Service Account > OAuth2 Refresh > Resend
+// Determine provider — priority: Service Account > OAuth2 Refresh > Resend > SMTP
 const USE_SERVICE_ACCOUNT = !!(GOOGLE_CLIENT_EMAIL && GOOGLE_PRIVATE_KEY);
 const USE_OAUTH_REFRESH = !USE_SERVICE_ACCOUNT && !!(GMAIL_CLIENT_ID && GMAIL_CLIENT_SECRET && GMAIL_REFRESH_TOKEN);
 const USE_GMAIL_API = USE_SERVICE_ACCOUNT || USE_OAUTH_REFRESH;
 const USE_RESEND = !USE_GMAIL_API && !!RESEND_API_KEY;
+// SMTP is always available as last-resort fallback when SMTP_PASSWORD is set
+const USE_SMTP_FALLBACK = USE_SMTP;
 
 if (USE_SERVICE_ACCOUNT) {
   console.log(`[EMAIL] Using Gmail API via Service Account: ${GOOGLE_CLIENT_EMAIL}, sending as: ${GMAIL_IMPERSONATE_USER}`);
 } else if (USE_OAUTH_REFRESH) {
   console.log(`[EMAIL] Using Gmail API via OAuth2 refresh token (from: ${SMTP_EMAIL})`);
 } else if (USE_RESEND) {
-  console.log(`[EMAIL] Using Resend API`);
+  console.log(`[EMAIL] Using Resend API${USE_SMTP ? ' + SMTP fallback' : ''}`);
+} else if (USE_SMTP_FALLBACK) {
+  console.log(`[EMAIL] Using Gmail SMTP fallback (from: ${SMTP_EMAIL})`);
 } else {
   console.error('');
   console.error('╔══════════════════════════════════════════════════════════════════════╗');
   console.error('║  ❌ EMAIL IS NOT CONFIGURED — ALL EMAILS WILL FAIL               ║');
   console.error('╠══════════════════════════════════════════════════════════════════════╣');
-  console.error('║  SMTP HAS BEEN REMOVED. Set ONE of these in env variables:       ║');
+  console.error('║  Set ONE of these in env variables:                              ║');
   console.error('║                                                                ║');
-  console.error('║  Option A (recommended): Gmail API OAuth2                        ║');
+  console.error('║  Option A (recommended): Resend API                              ║');
+  console.error('║    RESEND_API_KEY (get one at resend.com)                        ║');
+  console.error('║                                                                ║');
+  console.error('║  Option B: Gmail API OAuth2                                      ║');
   console.error('║    GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, GMAIL_REFRESH_TOKEN     ║');
   console.error('║                                                                ║');
-  console.error('║  Option B: Resend                                                ║');
-  console.error('║    RESEND_API_KEY                                                 ║');
+  console.error('║  Option C: Gmail SMTP (fallback for VPS/local)                   ║');
+  console.error('║    SMTP_EMAIL + SMTP_PASSWORD (Gmail app password)               ║');
   console.error('╚══════════════════════════════════════════════════════════════════════╝');
   console.error('');
 }
@@ -125,11 +137,15 @@ export function getEmailConfig() {
   } else if (USE_RESEND) {
     provider = 'resend';
     hasConfig = !!RESEND_API_KEY;
+  } else if (USE_SMTP_FALLBACK) {
+    provider = 'smtp';
+    hasConfig = USE_SMTP;
   }
   return {
     fromEmail: SAFE_FROM_EMAIL,
     provider,
     hasConfig,
+    hasSmtpFallback: USE_SMTP,
     serviceAccount: USE_SERVICE_ACCOUNT ? {
       clientEmail: GOOGLE_CLIENT_EMAIL,
       impersonateUser: GMAIL_IMPERSONATE_USER,
@@ -141,12 +157,15 @@ export function getEmailConfig() {
       hasClientSecret: !!GMAIL_CLIENT_SECRET,
       hasRefreshToken: !!GMAIL_REFRESH_TOKEN,
     } : undefined,
+    smtp: USE_SMTP_FALLBACK ? {
+      email: SMTP_EMAIL,
+      hasPassword: !!SMTP_PASSWORD,
+    } : undefined,
   };
 }
 
 // ─── HELPER: Send email via chosen provider ───
-// Priority: Gmail API (HTTPS) → Resend (HTTPS)
-// ⛔ SMTP REMOVED — it's blocked on Railway/cloud and will never be attempted.
+// Priority: Gmail API (HTTPS) → Resend (HTTPS) → SMTP (fallback)
 // Returns errors from ALL attempted providers so callers can see what failed.
 async function sendEmail(to: string, subject: string, html: string): Promise<{ success: boolean; messageId?: string; error?: string; provider?: string; attempts?: Array<{ provider: string; success: boolean; error?: string }> }> {
   const attempts: Array<{ provider: string; success: boolean; error?: string }> = [];
@@ -199,17 +218,40 @@ async function sendEmail(to: string, subject: string, html: string): Promise<{ s
     }
   }
 
-  // SMTP IS COMPLETELY REMOVED.
-  // If we reach here, neither Gmail API nor Resend succeeded.
-  console.error('')
-  console.error('EMAIL FAILED - NO EMAIL PROVIDER AVAILABLE')
-  console.error('SMTP is permanently disabled (blocked on Railway/cloud).')
-  console.error('Set GMAIL_CLIENT_ID + GMAIL_CLIENT_SECRET + GMAIL_REFRESH_TOKEN in env vars.')
-  console.error('')
+  // 3) Try SMTP fallback (Gmail SMTP on port 587)
+  //    Works on VPS/local servers. May be blocked on Railway/cloud.
+  if (USE_SMTP_FALLBACK) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: { user: SMTP_EMAIL, pass: SMTP_PASSWORD },
+      });
+      const result = await transporter.sendMail({
+        from: `"${FROM_NAME}" <${SMTP_EMAIL}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`[EMAIL/SMTP] Sent to ${to}: "${subject}" — id: ${result.messageId}`);
+      attempts.push({ provider: 'smtp', success: true });
+      return { success: true, messageId: result.messageId, provider: 'smtp', attempts };
+    } catch (error: any) {
+      console.error(`[EMAIL/SMTP] Failed for ${to}: ${error?.message || error}`);
+      attempts.push({ provider: 'smtp', success: false, error: error?.message || String(error) });
+    }
+  }
+
+  // All providers failed
+  console.error('');
+  console.error('EMAIL FAILED - ALL PROVIDERS FAILED');
+  console.error('Tried: ' + attempts.map(a => `${a.provider}(${a.success ? 'ok' : 'fail'})`).join(', '));
+  console.error('');
 
   return {
     success: false,
-    error: 'No email provider configured. SMTP is disabled. Set GMAIL_CLIENT_ID + GMAIL_CLIENT_SECRET + GMAIL_REFRESH_TOKEN in environment variables.',
+    error: `No email provider succeeded. Tried: ${attempts.map(a => a.provider).join(', ') || 'none configured'}. Set RESEND_API_KEY, Gmail API credentials, or SMTP_EMAIL+SMTP_PASSWORD.`,
     provider: 'none',
     attempts,
   };
@@ -235,6 +277,7 @@ function createServiceAccountJwt(): string {
     aud: 'https://oauth2.googleapis.com/token',
     iat: now,
     exp: now + 3600,
+    sub: GMAIL_IMPERSONATE_USER, // Required for domain-wide delegation
   })).toString('base64url');
 
   const signatureInput = `${header}.${payload}`;
@@ -527,7 +570,7 @@ async function sendEmailOrThrow(to: string, subject: string, html: string): Prom
 
 export async function sendVerificationEmail(to: string, otp: string, name?: string) {
   const greeting = name ? `Hello ${name}` : 'Hello';
-  console.log(`[EMAIL] Sending verification OTP to ${to}, code: ${otp}, from: ${SAFE_FROM_EMAIL}`);
+  console.log(`[EMAIL] Sending verification OTP to ${to}, from: ${SAFE_FROM_EMAIL}`);
 
   const body = contentArea(`
     <p style="color:#ffffff;font-size:14px;margin:0 0 16px;font-weight:500;letter-spacing:0.5px">${greeting},</p>
@@ -542,7 +585,7 @@ export async function sendVerificationEmail(to: string, otp: string, name?: stri
 
 export async function sendPasswordResetEmail(to: string, otp: string, name?: string) {
   const greeting = name ? `Hello ${name}` : 'Hello';
-  console.log(`[EMAIL] Sending password reset OTP to ${to}, code: ${otp}, from: ${SAFE_FROM_EMAIL}`);
+  console.log(`[EMAIL] Sending password reset OTP to ${to}, from: ${SAFE_FROM_EMAIL}`);
 
   const body = contentArea(`
     <p style="color:#ffffff;font-size:14px;margin:0 0 16px;font-weight:500;letter-spacing:0.5px">${greeting},</p>

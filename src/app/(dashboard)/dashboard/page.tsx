@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/useAuthStore';
 import TeslaLogo from '@/components/TeslaLogo';
-import ChatWidget from '@/components/ChatWidget';
 import ActiveTradeChart from '@/components/ActiveTradeChart';
 import WithdrawalNotification from '@/components/WithdrawalNotification';
 import HowToInvestSlider from '@/components/HowToInvestSlider';
@@ -548,8 +547,7 @@ export default function DashboardPage() {
       </div>
 
       <WidgetErrorBoundary fallback={null}>
-        <ChatWidget />
-      </WidgetErrorBoundary>
+</WidgetErrorBoundary>
 
       {/* ── LIVE WITHDRAWAL NOTIFICATIONS ── */}
       <WidgetErrorBoundary fallback={null}>

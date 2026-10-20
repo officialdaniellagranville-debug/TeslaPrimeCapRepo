@@ -3,10 +3,13 @@
 import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import {
   Diamond, Star, Percent, Info, Phone, Briefcase,
   MessageSquare, HelpCircle, Wallet, Image, Code, Menu, X, ArrowLeft
 } from 'lucide-react';
+
+const AdminAuthGate = dynamic(() => import('@/components/AdminAuthGate'), { ssr: false });
 
 const SIDEBAR_LINKS = [
   { href: '/bank-admin/hero', label: 'Hero', icon: Star },
@@ -28,6 +31,7 @@ export default function BankAdminLayout({ children }: { children: ReactNode }) {
   const isActive = (href: string) => pathname === href;
 
   return (
+    <AdminAuthGate>
     <div className="min-h-screen flex bg-[#0F172A]" style={{ color: '#F1F5F9' }}>
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -114,5 +118,6 @@ export default function BankAdminLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
     </div>
+    </AdminAuthGate>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface PaymentAddress {
   id: string;
@@ -433,8 +432,6 @@ export default function DepositPage() {
           )}
         </div>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

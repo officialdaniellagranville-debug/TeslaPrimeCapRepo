@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 interface Wallet { id: string; type: string; balance: number; availableBalance: number; }
 interface Beneficiary { id: string; name: string; bankName: string; accountNumber: string; country: string; };
@@ -160,8 +159,6 @@ export default function TransferPage() {
           <button onClick={submitInternational} disabled={loading} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors text-sm">{loading ? 'Processing...' : 'Send International Transfer'}</button>
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

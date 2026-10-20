@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
-import ChatWidget from '@/components/ChatWidget';
 
 interface Transaction {
   id: string;
@@ -280,8 +279,6 @@ export default function TransactionsPage() {
           )}
         </>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Search, Landmark, Check, Trash2, ChevronRight, AlertCircle } from 'lucide-react';
-import ChatWidget from '@/components/ChatWidget';
 
 const POPULAR_BANKS = [
   { name: 'Chase', color: '#0A6EBD', letter: 'C' },
@@ -316,8 +315,6 @@ export default function LinkBankPage() {
           {toast}
         </div>
       )}
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

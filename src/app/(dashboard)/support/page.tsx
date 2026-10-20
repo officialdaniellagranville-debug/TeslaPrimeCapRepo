@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 const faqLinks = [
   { q: 'How do I make a deposit?', a: 'Navigate to the Deposit section in your dashboard, select your preferred cryptocurrency wallet, enter the amount, and submit your transaction hash.' },
@@ -83,8 +82,6 @@ export default function SupportPage() {
           ))}
         </div>
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

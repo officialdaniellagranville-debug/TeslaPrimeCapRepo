@@ -1,6 +1,9 @@
 'use client';
 
-import { type ReactNode, Component, type ErrorInfo, useState } from 'react';
+import { type ReactNode, Component, type ErrorInfo } from 'react';
+import dynamic from 'next/dynamic';
+
+const GoogleTranslate = dynamic(() => import('@/components/GoogleTranslate'), { ssr: false });
 
 // ── Error Boundary for auth pages ──
 interface Props { children: ReactNode; }
@@ -29,5 +32,12 @@ class AuthErrorBoundary extends Component<Props, State> {
 }
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  return <AuthErrorBoundary>{children}</AuthErrorBoundary>;
+  return (
+    <AuthErrorBoundary>
+      <div className="fixed top-4 right-4 z-50">
+        <GoogleTranslate />
+      </div>
+      {children}
+    </AuthErrorBoundary>
+  );
 }

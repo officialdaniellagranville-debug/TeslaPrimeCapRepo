@@ -1,8 +1,8 @@
 import { db } from '@/lib/db';
-import { apiResponse, apiError } from '@/lib/api-helpers';
+import { requireRole, apiResponse, apiError } from '@/lib/api-helpers';
 import { NextRequest } from 'next/server';
 
-export async function GET() {
+async function getHandler(_request: NextRequest) {
   try {
     let s = await db.siteSettings.findUnique({ where: { id: 'main' } });
     if (!s) s = await db.siteSettings.create({ data: { id: 'main' } });
@@ -13,7 +13,7 @@ export async function GET() {
   }
 }
 
-export async function PUT(request: NextRequest) {
+async function putHandler(request: NextRequest) {
   try {
     const body = await request.json();
     const updateData: Record<string, any> = {};
@@ -42,3 +42,6 @@ export async function PUT(request: NextRequest) {
     return apiError('Failed to update', 'INTERNAL_ERROR', 500);
   }
 }
+
+export const GET = requireRole('SUPER_ADMIN', 'ADMIN')(getHandler);
+export const PUT = requireRole('SUPER_ADMIN', 'ADMIN')(putHandler);

@@ -3,11 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
   url       = env("DATABASE_URL")
-  // Railway Hobby provides DIRECT_URL for DDL (bypasses PgBouncer).
-  // Prisma CLI uses this for prisma db push / migrate.
-  directUrl = env("DIRECT_URL")
 }
 
 // ──────────────────────────────────────────────
@@ -279,6 +276,7 @@ model User {
   chartSpikes       ChartSpikeEvent[]
   vehicleOrders           VehicleOrder[]
   vehicleDepositPayments  VehicleDepositPayment[]
+  chatMessages            ChatMessage[]
 
   @@index([status], map: "idx_user_status")
   @@index([kycLevel], map: "idx_user_kyc_level")
@@ -322,9 +320,9 @@ model Wallet {
   id                String     @id @default(cuid())
   userId            String     @map("user_id")
   type              WalletType
-  balance           Decimal    @default(0) @db.Decimal(18,2)
-  availableBalance  Decimal    @default(0) @db.Decimal(18,2) @map("available_balance")
-  lockedBalance     Decimal    @default(0) @db.Decimal(18,2) @map("locked_balance")
+  balance           Decimal    @default(0)
+  availableBalance  Decimal    @default(0) @map("available_balance")
+  lockedBalance     Decimal    @default(0) @map("locked_balance")
 
   createdAt         DateTime   @default(now()) @map("created_at")
   updatedAt         DateTime   @updatedAt @map("updated_at")
@@ -348,7 +346,7 @@ model Transaction {
   walletId        String            @map("wallet_id")
   type            TransactionType
   status          TransactionStatus @default(pending)
-  amount          Decimal    @db.Decimal(18,2)
+  amount          Decimal
   description     String?
   referenceId     String?           @map("reference_id")
   metadata        String?           // JSON string for flexible data
@@ -375,9 +373,9 @@ model InvestmentPlan {
   slug            String        @unique
   description     String?
   tierName        String        @map("tier_name")  // Basic, Silver, Gold, Platinum
-  minAmount       Decimal      @db.Decimal(18,2) @map("min_amount")
-  maxAmount       Decimal?     @db.Decimal(18,2) @map("max_amount")
-  dailyReturnRate Decimal      @db.Decimal(8,4) @map("daily_return_rate")
+  minAmount       Decimal @map("min_amount")
+  maxAmount       Decimal? @map("max_amount")
+  dailyReturnRate Decimal @map("daily_return_rate")
   duration        Int
   durationUnit    DurationUnit  @map("duration_unit")
   isActive        Boolean       @default(true) @map("is_active")
@@ -401,12 +399,12 @@ model UserInvestment {
   userId            String            @map("user_id")
   planId            String            @map("plan_id")
   walletId          String            @map("wallet_id")
-  amount            Decimal           @db.Decimal(18,2)
+  amount            Decimal
   mode              UserMode          @default(demo)
   status            InvestmentStatus  @default(active)
-  dailyReturn       Decimal           @db.Decimal(18,2) @map("daily_return")
-  totalReturn       Decimal           @default(0) @db.Decimal(18,2) @map("total_return")
-  expectedReturn    Decimal           @db.Decimal(18,2) @map("expected_return")
+  dailyReturn       Decimal @map("daily_return")
+  totalReturn       Decimal           @default(0) @map("total_return")
+  expectedReturn    Decimal @map("expected_return")
   startDate         DateTime          @map("start_date")
   endDate           DateTime?         @map("end_date")
   lastPayoutAt      DateTime?         @map("last_payout_at")
@@ -432,8 +430,8 @@ model Deposit {
   id                String            @id @default(cuid())
   userId            String            @map("user_id")
   walletId          String            @map("wallet_id")
-  amount            Decimal           @db.Decimal(18,2)
-  usdAmount         Decimal           @db.Decimal(18,2) @map("usd_amount")
+  amount            Decimal
+  usdAmount         Decimal @map("usd_amount")
   method            DepositMethod
   cryptoCurrency    CryptoCurrency?   @map("crypto_currency")
   txHash            String?           @map("tx_hash")
@@ -463,9 +461,9 @@ model Withdrawal {
   id                    String                   @id @default(cuid())
   userId                String                   @map("user_id")
   walletId              String                   @map("wallet_id")
-  amount                Decimal                 @db.Decimal(18,2)
-  fee                   Decimal                 @default(0) @db.Decimal(18,2)
-  netAmount             Decimal                 @db.Decimal(18,2) @map("net_amount")
+  amount                Decimal
+  fee                   Decimal                 @default(0)
+  netAmount             Decimal @map("net_amount")
   destinationType       WithdrawalDestinationType @map("destination_type")
   destinationAddress    String?                  @map("destination_address")
   bankName              String?                  @map("bank_name")
@@ -516,8 +514,8 @@ model ReferralCommission {
   userId          String                   @map("user_id")
   depositId       String?                  @map("deposit_id")
   referrerId      String                   @map("referrer_id")
-  amount          Decimal    @db.Decimal(18,2)
-  rate            Decimal    @db.Decimal(8,4)
+  amount          Decimal
+  rate            Decimal
   level           Int                      @default(1)
   type            ReferralCommissionType   @default(direct)
   status          ReferralCommissionStatus @default(pending)
@@ -541,8 +539,8 @@ model BinaryNode {
   userId          String         @unique @map("user_id")
   parentId        String?        @map("parent_id")
   position        BinaryPosition
-  volumeLeft      Decimal       @default(0) @db.Decimal(18,2) @map("volume_left")
-  volumeRight     Decimal       @default(0) @db.Decimal(18,2) @map("volume_right")
+  volumeLeft      Decimal       @default(0) @map("volume_left")
+  volumeRight     Decimal       @default(0) @map("volume_right")
   depth           Int            @default(0)
 
   createdAt       DateTime       @default(now()) @map("created_at")
@@ -763,8 +761,8 @@ model PromoCode {
   id              String              @id @default(cuid())
   code            String              @unique
   discountType    PromoDiscountType   @map("discount_type")
-  discountValue   Decimal            @db.Decimal(18,2) @map("discount_value")
-  minDeposit      Decimal?           @db.Decimal(18,2) @map("min_deposit")
+  discountValue   Decimal @map("discount_value")
+  minDeposit      Decimal? @map("min_deposit")
   maxUses         Int?                @map("max_uses")
   currentUses     Int                 @default(0) @map("current_uses")
   status          PromoCodeStatus     @default(active)
@@ -809,7 +807,7 @@ model GiftCard {
   cardType        String         @map("card_type")
   cardCode        String         @map("card_code")
   pinCode         String?        @map("pin_code")
-  amount          Decimal       @db.Decimal(18,2)
+  amount          Decimal
   currency        String         @default("USD")
   imageUrl        String?        @map("image_url")
   status          GiftCardStatus @default(pending)
@@ -873,7 +871,7 @@ model ChartSpikeEvent {
   id            String   @id @default(cuid())
   userId        String   @map("user_id")
   direction     String   @default("up")    // 'up' | 'down'
-  magnitudePct  Decimal  @db.Decimal(8,4)   // e.g. 10.00 = 10% jump
+  magnitudePct  Decimal   // e.g. 10.00 = 10% jump
   message       String?
   consumed      Boolean  @default(false)
   consumedAt    DateTime? @map("consumed_at")
@@ -918,7 +916,7 @@ model TeslaVehicle {
   category      String
   basePrice     Float    @map("base_price")
   imageUrl      String   @map("image_url")
-  description   String   @db.Text
+  description   String
   specs         Json
   colors        Json
   interior      String   @default("Premium Black")
@@ -945,15 +943,15 @@ model VehicleOrder {
   fullName      String            @map("full_name")
   email         String
   phone         String?
-  address       String            @db.Text
+  address       String
   city          String
   state         String
   postalCode    String            @map("postal_code")
   country       String            @default("US")
   orderNumber   String            @unique @map("order_number")
   trackingInfo  Json?             @map("tracking_info")
-  notes         String?           @db.Text
-  adminNotes    String?           @db.Text @map("admin_notes")
+  notes         String?
+  adminNotes    String? @map("admin_notes")
   createdAt     DateTime          @default(now()) @map("created_at")
   updatedAt     DateTime          @updatedAt @map("updated_at")
 
@@ -987,5 +985,29 @@ model VehicleDepositPayment {
   @@index([orderId], map: "idx_vehicle_deposit_order")
   @@index([status], map: "idx_vehicle_deposit_status")
   @@map("vehicle_deposit_payments")
+}
+
+// ──────────────────────────────────────────────
+// CHAT MESSAGE MODEL
+// ──────────────────────────────────────────────
+
+model ChatMessage {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  senderType    String   // "user" or "admin"
+  senderId      String?  @map("sender_id") // admin user id when senderType=admin
+  message       String
+  isRead        Boolean  @default(false) @map("is_read")
+  readAt        DateTime? @map("read_at")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_chat_user")
+  @@index([senderType], map: "idx_chat_sender_type")
+  @@index([createdAt], map: "idx_chat_created")
+  @@map("chat_messages")
 }
 

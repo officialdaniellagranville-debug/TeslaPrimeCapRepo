@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import ChatWidget from '@/components/ChatWidget';
 
 const CATEGORIES = [
   { id: 'electricity', name: 'Electricity', color: '#F59E0B', icon: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />' },
@@ -101,7 +100,6 @@ export default function PayBillsPage() {
           <button onClick={handlePay} disabled={loading} className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors text-sm">{loading ? 'Processing...' : `Pay $${amount ? parseFloat(amount).toFixed(2) : '0.00'}`}</button>
         </div>
       )}
-      <ChatWidget />
-    </div>
+</div>
   );
 }

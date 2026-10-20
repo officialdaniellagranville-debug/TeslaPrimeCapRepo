@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { debugGate } from '@/lib/debug-gate';
 
 export const dynamic = 'force-dynamic';
 
-// Temporary diagnostic + fix endpoint — REMOVE after fixing the schema issue
+// Temporary diagnostic + fix endpoint — blocked in production
 export async function GET() {
+  const gate = debugGate();
+  if (gate) return gate;
   const results: Record<string, { ok: boolean; detail: string }> = {};
 
   // AUTO-FIX: The actual table is 'users' (lowercase, in public schema)

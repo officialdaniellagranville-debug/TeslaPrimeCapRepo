@@ -2,21 +2,17 @@ import { NextResponse } from 'next/server';
 import net from 'net';
 import https from 'https';
 import { getEmailConfig } from '@/lib/email';
+import { debugGate } from '@/lib/debug-gate';
 
 /**
  * GET /api/debug/email-public
  *
- * PUBLIC diagnostic endpoint (no auth required).
- *
- * This is SAFE to expose publicly because:
- * - Env vars are masked (only first 3 + last 6 chars shown)
- * - Only returns connectivity status (reachable / not reachable)
- * - Does NOT expose any secrets, tokens, or user data
- *
- * Used to diagnose email delivery issues from inside Railway,
- * particularly the well-known Railway SMTP port block.
+ * Diagnostic endpoint — blocked in production.
  */
 export async function GET() {
+  const gate = debugGate();
+  if (gate) return gate;
+
   const results: any = {
     timestamp: new Date().toISOString(),
     config: getEmailConfig(),

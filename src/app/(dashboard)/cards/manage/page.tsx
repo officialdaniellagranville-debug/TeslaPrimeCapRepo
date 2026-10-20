@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import ChatWidget from '@/components/ChatWidget';
 import { Snowflake, Eye, EyeOff, Settings, AlertTriangle, Copy, Check, DollarSign, Lock, CreditCard } from 'lucide-react';
 
 export default function ManageCardPage() {
@@ -155,8 +154,6 @@ export default function ManageCardPage() {
           ))}</div>
         )}
       </div>
-
-      <ChatWidget />
-    </div>
+</div>
   );
 }

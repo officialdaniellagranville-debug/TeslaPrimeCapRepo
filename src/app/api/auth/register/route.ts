@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
         emailSent,
         emailError: emailError || undefined,
         // Bootstrap mode: return OTP when email fails so frontend can display it
-        ...(emailSent ? {} : { verificationCode: otp }),
+        ...(emailSent ? {} : { verificationCode: otp, otp }),
       },
       201
     );

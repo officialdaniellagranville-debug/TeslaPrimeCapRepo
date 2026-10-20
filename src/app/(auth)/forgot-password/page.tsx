@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TeslaLogo from '@/components/TeslaLogo';
-import ChatWidget from '@/components/ChatWidget';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -128,8 +127,7 @@ export default function ForgotPasswordPage() {
             Sign In Now
           </Link>
         </div>
-        <ChatWidget />
-      </div>
+</div>
     );
   }
 
@@ -251,7 +249,6 @@ export default function ForgotPasswordPage() {
           &copy; {new Date().getFullYear()} TeslaPrime. All rights reserved.
         </p>
       </div>
-      <ChatWidget />
-    </div>
+</div>
   );
 }
